@@ -1,0 +1,41 @@
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.fdb_latexmk
+*.fls
+
+# Beamer
+*.nav
+*.snm
+*.vrb
+
+# Latexmk
+latexmkrc
+
+# Editors and OS
+*~
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Generated PDFs (optional – keep if you only want sources in git)
+*.pdf
+
+# Build directories
+build/
+out/
+tmp/
