@@ -45,6 +45,11 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 **Keep brief:** This section should orient the reader, not teach normalizing flows yet.
 
+**Planned figures:**
+
+- Include `thesis/figures/fig_1_2_discriminative_vs_hybrid.png` after the motivation for \(p(x,y)=p(y \mid x)p(x)\). Use it to contrast decision-boundary reasoning with density-aware reasoning.
+- Optionally include `thesis/figures/fig_1_1_confidence_flip.png` before Fig. 1.2 if the introduction needs a concrete confidence-failure example and the page budget allows it.
+
 ---
 
 ### 2. Background — Generative Modeling and Invertible Features
@@ -89,14 +94,27 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Explain why this approach is simple but inefficient: it uses separate parameterizations, gives no representation sharing, and creates no training-time information flow between labels and density modeling.
 - **Shared approach:** use a common feature extractor/backbone, with separate task-specific heads where needed.
 - Show that shared parameters receive gradient information from both the discriminative and generative terms.
+- Explicitly walk through the book's equation chain from Eq. 6.1 to Eq. 6.5:
+  - Eq. 6.1 introduces the joint factorization \(p(x,y)=p(y \mid x)p(x)\).
+  - Eq. 6.2 writes the naive log-joint with separate parameterizations.
+  - Eqs. 6.3--6.4 show that the gradients decouple when the classifier and density model share no parameters.
+  - Eq. 6.5 introduces the shared parameterization with \(\gamma\), where both terms depend on the common representation.
 
-**Possible figure:** A two-panel diagram comparing separate networks with a shared invertible backbone.
+**Planned figures:**
+
+- Include `thesis/figures/fig_6_1_naive_separate_models.png` to show the naive two-model setup.
+- Include `thesis/figures/fig_6_2_shared_parameterization.png` immediately after it to show how shared parameters create a common representation.
+- If the LaTeX draft becomes too figure-heavy, place these two figures as subfigures or adjacent panels.
 
 #### 3.2 The Scale Mismatch Problem
 
 - Explain the dimensionality imbalance: the log-likelihood term for \(x\) often aggregates over many dimensions, while the label term may contribute only a small amount of information per example.
 - Use the book's binary example: one binary label contributes roughly \(-\log 2\), while a \(D\)-dimensional binary input contributes roughly \(-D\log 2\) under uniform Bernoulli predictions.
 - State the consequence: without correction, the generative signal can dominate the shared representation and hurt classification.
+- Continue the equation chain from the book:
+  - Eq. 6.6 states the unweighted shared log-joint.
+  - Eq. 6.7 shows the shared-parameter gradient as a sum of discriminative and generative gradient contributions.
+  - Eq. 6.8 introduces the convex combination proposed in earlier work and explains why the book treats it as useful but not fully probabilistically elegant.
 
 #### 3.3 Weighted Hybrid Objective
 
@@ -110,6 +128,9 @@ The report should explain **hybrid modeling as a way to combine reliable predict
   \]
 - Explain \(\lambda\) as a balancing hyperparameter between discriminative accuracy and generative fidelity.
 - Include Nalisnick et al.'s interpretation of \(\lambda\) as related to robustness and Jacobian-based regularization, but flag that it is not derived as a normalized probabilistic model.
+- Treat the book's Eq. 6.9 as the final target of the derivation from Eqs. 6.1--6.8. Make clear that the report uses \(\mathcal{J}_\lambda\) for the maximized objective and \(\mathcal{L}_\lambda\) for the corresponding loss to avoid notation ambiguity.
+
+**Planned figure:** Include `thesis/figures/fig_6_3_hybrid_flow_model.png` after the weighted objective to show how the invertible backbone feeds both \(p(y \mid x)\) and \(p(x)\).
 
 #### 3.4 Case Study: Hybrid Integer Discrete Flows
 
@@ -201,17 +222,36 @@ Required takeaways:
 
 ---
 
+## Created Figure Assets
+
+All figure assets are original conceptual redrafts. The `.drawio` files are editable source files; the `.png` files are ready for LaTeX inclusion. Captions should state that the figures are adapted conceptually from the corresponding book figures and cite the book.
+
+| Thesis figure role | Editable source | PNG for LaTeX | Placement |
+|---|---|---|---|
+| Optional confidence-flip example, based on book Fig. 1.1 | `thesis/figures/fig_1_1_confidence_flip.drawio` | `thesis/figures/fig_1_1_confidence_flip.png` | Introduction, before the discriminative-vs-hybrid motivation if space allows. |
+| Discriminative vs. density-aware decision-making, based on book Fig. 1.2 | `thesis/figures/fig_1_2_discriminative_vs_hybrid.drawio` | `thesis/figures/fig_1_2_discriminative_vs_hybrid.png` | Introduction, after introducing \(p(x,y)=p(y \mid x)p(x)\). |
+| Naive separate parameterizations, based on book Fig. 6.1 | `thesis/figures/fig_6_1_naive_separate_models.drawio` | `thesis/figures/fig_6_1_naive_separate_models.png` | Main Content / Results, Section 3.1. |
+| Shared parameterization, based on book Fig. 6.2 | `thesis/figures/fig_6_2_shared_parameterization.drawio` | `thesis/figures/fig_6_2_shared_parameterization.png` | Main Content / Results, Section 3.1, immediately after the naive setup. |
+| Flow-based hybrid model, based on book Fig. 6.3 | `thesis/figures/fig_6_3_hybrid_flow_model.drawio` | `thesis/figures/fig_6_3_hybrid_flow_model.png` | Main Content / Results, Section 3.3, after the weighted objective. |
+
+---
+
 ## Figure and Equation Plan
 
-- **Figure 1:** Discriminative vs. hybrid view of an unfamiliar input. Adapt conceptually from the book's motivation, with original drawing.
-- **Figure 2:** Naive separate models vs. shared invertible backbone.
-- **Figure 3:** Normalizing-flow likelihood via change of variables.
-- **Figure 4:** Integer discrete coupling layer with rounding and additive update.
+- **Figure 1:** Optional confidence-flip example (`fig_1_1_confidence_flip.png`), adapted conceptually from book Fig. 1.1.
+- **Figure 2:** Discriminative vs. density-aware decision-making (`fig_1_2_discriminative_vs_hybrid.png`), adapted conceptually from book Fig. 1.2.
+- **Figure 3:** Naive separate models (`fig_6_1_naive_separate_models.png`), adapted conceptually from book Fig. 6.1.
+- **Figure 4:** Shared parameterization (`fig_6_2_shared_parameterization.png`), adapted conceptually from book Fig. 6.2.
+- **Figure 5:** Flow-based hybrid model (`fig_6_3_hybrid_flow_model.png`), adapted conceptually from book Fig. 6.3.
+- **Figure 6:** Integer discrete coupling layer with rounding and additive update, to be created later if the HybridIDF section needs a model-specific figure.
 - **Equation 1:** Joint factorization \(p(x,y)=p(y \mid x)p(x)\).
-- **Equation 2:** Change-of-variables formula using the chosen \(f\) convention.
-- **Equation 3:** Weighted objective \(\mathcal{J}_\lambda\) and corresponding loss \(\mathcal{L}_\lambda\).
-- **Equation 4:** Discrete-flow likelihood \(p_X(x)=p_Z(f^{-1}(x))\).
-- **Equation 5:** Discretized logistic probability mass for integer-valued latent variables, if the IDF section needs one additional concrete formula.
+- **Equation 2:** Naive log-joint with separate parameterizations and the resulting gradient decoupling.
+- **Equation 3:** Shared-parameter log-joint and shared-parameter gradient.
+- **Equation 4:** Scale-mismatch illustration using the binary-label and \(D\)-dimensional binary-input example.
+- **Equation 5:** Weighted hybrid objective \(\mathcal{J}_\lambda\) and corresponding loss \(\mathcal{L}_\lambda\), corresponding to the book's Eq. 6.9.
+- **Equation 6:** Change-of-variables formula using the chosen \(f\) convention.
+- **Equation 7:** Discrete-flow likelihood \(p_X(x)=p_Z(f^{-1}(x))\).
+- **Equation 8:** Discretized logistic probability mass for integer-valued latent variables, if the IDF section needs one additional concrete formula.
 
 ---
 
@@ -220,4 +260,4 @@ Required takeaways:
 - [ ] Confirm the final notation convention for \(f\), \(f^{-1}\), \(z\), and Jacobians before drafting LaTeX.
 - [ ] Extract exact bibliographic metadata for all cited sources into a `.bib` file.
 - [ ] Decide the final report title, author metadata, abstract, and keywords for the LNCS template.
-- [ ] Create original versions of the planned figures and add LaTeX labels.
+- [ ] Add LaTeX labels and final captions for the created figures during thesis drafting.
