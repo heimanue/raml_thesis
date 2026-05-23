@@ -21,6 +21,18 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Spend most of the report on the derivation, shared parameterization, scale mismatch, weighted objective, and HybridIDF construction.
 - Keep the Discussion compact. It should interpret the book's example and outlook, not become a separate literature survey. Target roughly **700--1,000 words** for the full Discussion unless the later LaTeX draft clearly needs more.
 - Use the bullets below as drafting guidance, not as a requirement to write one paragraph per bullet.
+- Use the book's notation strictly throughout the report. In particular, use \(\ln\), \(z=f^{-1}(x)\), \(\pi(z)\), \(J_f\), \(\lambda\), and the book's objective notation \(\ell(x,y;\lambda)\). Avoid introducing parallel notation unless the book itself does so.
+
+---
+
+## Thesis Metadata
+
+| Field | Value |
+|---|---|
+| Title | Hybrid Modeling |
+| Author | Manuel Hein |
+| Abstract | Write after the main report is stable. |
+| Keywords | Decide during LaTeX drafting. |
 
 ---
 
@@ -75,13 +87,9 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 - Use Chapter 4 of the book as the primary source for this subsection.
 - Define a normalizing flow as an invertible transformation between data \(x\) and latent variable \(z\).
-- Use one notation convention consistently. The book often writes \(z=f^{-1}(x)\); with this convention:
+- Use the book's notation consistently. The report should write \(z=f^{-1}(x)\) and express the continuous flow likelihood as:
   \[
-  p_X(x)=p_Z(f^{-1}(x))\left|\det J_{f^{-1}}(x)\right|.
-  \]
-  Equivalently, if \(x=f(z)\), then:
-  \[
-  p_X(x)=p_Z(z)\left|\det J_f(z)\right|^{-1}.
+  p(x)=\pi(z=f^{-1}(x))|J_f(x)|^{-1}.
   \]
 - Explain the role of the Jacobian determinant as a volume-correction term in continuous spaces.
 - Keep the explanation didactic: the reader should understand why flows provide exact likelihoods and why invertibility matters.
@@ -119,7 +127,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 #### 3.2 The Scale Mismatch Problem
 
 - Explain the dimensionality imbalance: the log-likelihood term for \(x\) often aggregates over many dimensions, while the label term may contribute only a small amount of information per example.
-- Use the book's binary example: one binary label contributes roughly \(-\log 2\), while a \(D\)-dimensional binary input contributes roughly \(-D\log 2\) under uniform Bernoulli predictions.
+- Use the book's binary example: one binary label contributes roughly \(-\ln 2\), while a \(D\)-dimensional binary input contributes roughly \(-D\ln 2\) under uniform Bernoulli predictions.
 - State the consequence: without correction, the generative signal can dominate the shared representation and hurt classification.
 - Continue the equation chain from the book:
   - Eq. 6.6 states the unweighted shared log-joint.
@@ -130,15 +138,11 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 - Present the objective to **maximize**:
   \[
-  \mathcal{J}_\lambda(x,y)=\log p(y \mid x)+\lambda \log p(x),\quad \lambda \geq 0.
-  \]
-- If discussing implementation or optimization as a loss, use the negative objective:
-  \[
-  \mathcal{L}_\lambda(x,y)=-\log p(y \mid x)-\lambda \log p(x).
+  \ell(x,y;\lambda)=\ln p(y \mid x)+\lambda\ln p(x),\quad \lambda\geq 0.
   \]
 - Explain \(\lambda\) as a balancing hyperparameter between discriminative accuracy and generative fidelity.
 - Include Nalisnick et al.'s interpretation of \(\lambda\) as related to robustness and Jacobian-based regularization, but flag that it is not derived as a normalized probabilistic model.
-- Treat the book's Eq. 6.9 as the final target of the derivation from Eqs. 6.1--6.8. Make clear that the report uses \(\mathcal{J}_\lambda\) for the maximized objective and \(\mathcal{L}_\lambda\) for the corresponding loss to avoid notation ambiguity.
+- Treat the book's Eq. 6.9 as the final target of the derivation from Eqs. 6.1--6.8. If implementation language requires a minimized loss, describe it in words as the negative of the book's objective rather than introducing a competing primary symbol.
 
 **Planned figure:** Include `thesis/figures/fig_6_3_hybrid_flow_model.png` after the weighted objective to show how the invertible backbone feeds both \(p(y \mid x)\) and \(p(x)\).
 
@@ -150,7 +154,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Introduce Integer Discrete Flows as bijective maps on integer-valued data.
 - For a discrete bijection, avoid the continuous volume-correction term:
   \[
-  p_X(x)=p_Z(f^{-1}(x)).
+  p(x)=\pi(z=f^{-1}(x)).
   \]
 - State that IDFs usually place a **discretized logistic distribution** or a discretized logistic mixture on the latent integer variables. This prior fits ordinal data because nearby integer values remain meaningfully related.
 - Explain integer discrete coupling layers:
@@ -164,8 +168,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
   - this approximation enables gradient-based training but introduces bias.
 - Make clear that the report should **not** include code from the book. It should explain the concepts and equations only.
 - Use Hoogeboom et al.'s results only as supporting evidence, not as the main empirical story: Table 3 reports competitive generative modeling in bits per dimension; Tables 1 and 2 report lossless-compression performance.
-
-**Optional figure:** Bipartite integer coupling layer showing split, neural transformation, rounding, and additive update.
+- Do **not** add a separate IDF coupling-layer figure for the current version. Explain the coupling layer in prose unless the draft later clearly needs a visual.
 
 ---
 
@@ -179,6 +182,7 @@ Begin with a compact discussion of the book's Fig. 6.4:
 
 - Explain what the four panels demonstrate at a high level: real images, unconditional generations, classification error during validation, and negative log-likelihood during validation.
 - Use Fig. 6.4 as the bridge from the technical construction to the broader question: what does the hybrid objective achieve, and what remains unresolved?
+- Include a visual when discussing these outcomes. Prefer an adapted conceptual redraw or a correctly cited reproduction, depending on what is appropriate for the final submission rules.
 - Do not overstate the empirical strength of this example. Treat it as an illustrative outcome of the book's implementation, not as a comprehensive benchmark.
 
 #### 4.1 Out-of-Distribution Detection
@@ -267,22 +271,21 @@ All figure assets are original conceptual redrafts. The `.drawio` files are edit
 - **Figure 3:** Naive separate models (`fig_6_1_naive_separate_models.png`), adapted conceptually from book Fig. 6.1.
 - **Figure 4:** Shared parameterization (`fig_6_2_shared_parameterization.png`), adapted conceptually from book Fig. 6.2.
 - **Figure 5:** Flow-based hybrid model (`fig_6_3_hybrid_flow_model.png`), adapted conceptually from book Fig. 6.3.
-- **Figure 6:** Book Fig. 6.4 outcomes, either described in text or redrawn as a compact conceptual results figure if the Discussion needs a visual bridge.
-- **Figure 7:** Integer discrete coupling layer with rounding and additive update, to be created later if the HybridIDF section needs a model-specific figure.
+- **Figure 6:** Book Fig. 6.4 outcomes. Include a visual if the Discussion talks about these outcomes; prefer an adapted conceptual redraw unless a direct reproduction is explicitly allowed.
 - **Equation 1:** Joint factorization \(p(x,y)=p(y \mid x)p(x)\).
 - **Equation 2:** Naive log-joint with separate parameterizations and the resulting gradient decoupling.
 - **Equation 3:** Shared-parameter log-joint and shared-parameter gradient.
 - **Equation 4:** Scale-mismatch illustration using the binary-label and \(D\)-dimensional binary-input example.
-- **Equation 5:** Weighted hybrid objective \(\mathcal{J}_\lambda\) and corresponding loss \(\mathcal{L}_\lambda\), corresponding to the book's Eq. 6.9.
+- **Equation 5:** Weighted hybrid objective \(\ell(x,y;\lambda)\), corresponding to the book's Eq. 6.9.
 - **Equation 6:** Change-of-variables formula using the chosen \(f\) convention.
-- **Equation 7:** Discrete-flow likelihood \(p_X(x)=p_Z(f^{-1}(x))\).
+- **Equation 7:** Discrete-flow likelihood \(p(x)=\pi(z=f^{-1}(x))\).
 - **Equation 8:** Discretized logistic probability mass for integer-valued latent variables, if the IDF section needs one additional concrete formula.
 
 ---
 
 ## Open Questions / Placeholders
 
-- [ ] Confirm the final notation convention for \(f\), \(f^{-1}\), \(z\), and Jacobians before drafting LaTeX.
 - [ ] Extract exact bibliographic metadata for all cited sources into a `.bib` file.
-- [ ] Decide the final report title, author metadata, abstract, and keywords for the LNCS template.
+- [ ] Decide final keywords for the LNCS template.
+- [ ] Create or source the Fig. 6.4 visual before drafting the Discussion.
 - [ ] Add LaTeX labels and final captions for the created figures during thesis drafting.
