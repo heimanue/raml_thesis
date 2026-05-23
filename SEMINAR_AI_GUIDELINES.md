@@ -21,6 +21,15 @@ This is a **university seminar report** for the Master's seminar *"Recent Advanc
 | **Style** | Lecture script — concise, explanatory, didactic |
 
 > When generating or editing text, keep a running estimate of word count and flag if the draft is heading outside the 7,000–14,000 range. Around 10 pages is a natural target given the scope of the topic.
+> If the page target and word-count target appear to conflict during drafting, flag the conflict explicitly instead of silently compressing or expanding the text.
+> The official seminar handout currently says "characters"; this is a typo. Treat **7,000–14,000 words** as the correct requirement.
+
+### Guideline Source Files
+
+| File | Use |
+|---|---|
+| `guidelines/_Teaching__MA_Seminar__SoSe_26_ (dragged).pdf` | Official seminar organization, grading split, report requirements, and lecture-script framing. |
+| `guidelines/Whitesides_writing_res_paper.pdf` | Writing process and style rules: outline-first drafting, importance-based organization, figure/table/equation planning, and concise scientific prose. |
 
 ---
 
@@ -47,9 +56,12 @@ These are derived from Whitesides' *"Writing a Paper"* (Adv. Mater. 2004) and ap
 - Use the **active voice** whenever possible.
   - ❌ *It was observed that the model converged.*
   - ✅ *The model converged.* / *We observed that the model converged.*
-- Describe results in the **past tense**.
+- Describe specific experimental findings from papers in the **past tense**.
   - ❌ *Addition of regularization gives better accuracy.*
   - ✅ *Addition of regularization gave better accuracy.*
+- Use the **present tense** for definitions, mathematical facts, and the report's own structure.
+  - ✅ *A normalizing flow maps data to a latent variable through an invertible transformation.*
+  - ✅ *Section 3 introduces the weighted hybrid objective.*
 
 ### Clarity
 - The word **"this"** must always be followed by a noun so its reference is explicit.
@@ -73,12 +85,17 @@ These are derived from Whitesides' *"Writing a Paper"* (Adv. Mater. 2004) and ap
 
 ## 5. Grading Criteria to Optimize For
 
+### Overall Seminar Grade
+- Active participation in the seminar: **10%**
+- Presentation quality and independent preparation: **60%**
+- Written report quality: **30%**
+
 ### Report (30% of final grade)
 - Structure and readability
-- Balance between breadth and depth
+- Length and balance between breadth and depth
 - Formal notation and correctness
 - Linguistic quality
-- Quality of illustrations, figures, and tables
+- Amount and quality of illustrations, figures, and tables
 - References and bibliography
 
 ---
@@ -86,6 +103,7 @@ These are derived from Whitesides' *"Writing a Paper"* (Adv. Mater. 2004) and ap
 ## 6. Outline-First Workflow
 
 > A drafted report structure is documented in **`REPORT_STRUCTURE.md`** in this repository. Use it as the authoritative reference for section order, subsection breakdown, and content scope. Feel free to suggest improvements, but do not deviate from it without being explicitly asked to.
+> The outline must preserve the formal top-level section order from Section 3. Topic-specific headings in `REPORT_STRUCTURE.md` should be nested inside those required sections.
 
 Before drafting any section, produce an **outline** following this process (adapted from Whitesides):
 
@@ -96,6 +114,7 @@ Before drafting any section, produce an **outline** following this process (adap
 5. Only begin drafting prose once the outline is approved.
 
 > Do not start writing full text until the outline for a section is confirmed. Iterating on an outline is far more efficient than rewriting prose.
+> Write the abstract only after the main report is stable. Whitesides explicitly recommends delaying the abstract until the paper is complete.
 
 ---
 
@@ -114,6 +133,14 @@ Before drafting any section, produce an **outline** following this process (adap
 - Use the reference style required by the LaTeX template.
 - Prefer **primary sources** (original papers) over textbooks or blog posts where possible.
 - Do not cite sources you (or I) cannot verify. If a citation is uncertain, flag it explicitly with `[VERIFY]`.
+
+### Academic Integrity and Source Use
+
+- Avoid plagiarism strictly: do **not** copy whole sentences, paragraphs, captions, or explanations 1:1 from the book, papers, slides, or any other source.
+- Exact wording is only acceptable when it is intentionally used as a short quotation, clearly marked as a quotation, and cited correctly.
+- Default to paraphrasing in original language while preserving the technical meaning and citing the source of the idea.
+- When adapting a figure, table, definition, or example from a source, make the adaptation explicit in the caption or surrounding text and cite the source.
+- If a sentence is too close to a source sentence, rewrite it before it enters the report draft.
 
 ---
 
@@ -158,18 +185,27 @@ They should not replace the book as the structural backbone of the report.
 ### Repository Layout
 ```
 /
-├── thesis/          ← write the report here; LaTeX template already present
-├── resources/       ← book (Ch. 6: Hybrid Modeling) + 2 papers
+├── guidelines/      ← official seminar/writing guidelines
+├── thesis/          ← write the LaTeX report here; LNCS template already present
+├── resources/       ← source PDFs for the report
 └── SEMINAR_AI_GUIDELINES.md
 ```
 
 > Before starting any draft, read Chapter 6 of the book in full. Then check both papers for sections that directly relate to topics covered in that chapter.
 
+### Current Source Files
+
+| File | Role in the report |
+|---|---|
+| `resources/hybrid_modeling.pdf` | Main source; use Chapter 6, **Hybrid Modeling**, as the structural backbone. |
+| `resources/nalisnick19b.pdf` | Primary supplementary paper for hybrid models with deep invertible features, weighted objectives, OOD detection, and semi-supervised learning. |
+| `resources/NeurIPS-2019-integer-discrete-flows-and-lossless-compression-Paper.pdf` | Primary supplementary paper for Integer Discrete Flows, discrete coupling layers, rounding, STE, and lossless compression context. |
+
 ---
 
 ## 11. Quick Checklist Before Submission
 
-- [ ] Character count is between 7,000 and 14,000
+- [ ] Word count is between 7,000 and 14,000
 - [ ] Written in English
 - [ ] Compiled in LaTeX using the Moodle template
 - [ ] All section headings are specific and informative
