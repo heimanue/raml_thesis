@@ -15,14 +15,23 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 ---
 
+## Drafting Balance
+
+- Treat Chapter 6 of the book as the report's spine. The supplementary papers clarify, support, or contextualize individual points; they should not determine the overall structure.
+- Spend most of the report on the derivation, shared parameterization, scale mismatch, weighted objective, and HybridIDF construction.
+- Keep the Discussion compact. It should interpret the book's example and outlook, not become a separate literature survey. Target roughly **700--1,000 words** for the full Discussion unless the later LaTeX draft clearly needs more.
+- Use the bullets below as drafting guidance, not as a requirement to write one paragraph per bullet.
+
+---
+
 ## Sections at a Glance
 
 | # | Required Section | Working Title | Core Concepts | Main Sources |
 |---|---|---|---|---|
-| 1 | Introduction | Why Hybrid Modeling? | Motivation, OOD confidence failure, joint distribution | Book Ch. 6; Nalisnick et al. |
-| 2 | Background | Generative Modeling and Invertible Features | \(p(y \mid x)\), \(p(x)\), normalizing flows, change of variables, predictive head | Book Ch. 1 and Ch. 6; Nalisnick et al. |
-| 3 | Main Content / Results | Hybrid Models with Shared Invertible Representations | Naive vs. shared parameterization, scale mismatch, weighted objective, HybridIDF | Book Ch. 6; Nalisnick et al.; Hoogeboom et al. |
-| 4 | Discussion | Applications, Robustness, and Limitations | OOD detection, semi-supervised learning, role of \(\lambda\), limits of likelihood-based confidence | Book Ch. 6; Nalisnick et al. |
+| 1 | Introduction | Why Hybrid Modeling? | Motivation, OOD confidence failure, joint distribution | Book Ch. 1 and Ch. 6 |
+| 2 | Background | Generative Modeling and Invertible Features | \(p(y \mid x)\), \(p(x)\), normalizing flows, change of variables, predictive head | Book Ch. 1, Ch. 4, and Ch. 6; Nalisnick et al. as support |
+| 3 | Main Content / Results | Hybrid Models with Shared Invertible Representations | Naive vs. shared parameterization, scale mismatch, weighted objective, HybridIDF | Book Ch. 6; Nalisnick et al. and Hoogeboom et al. as support |
+| 4 | Discussion | What the HybridIDF Example Suggests | Fig. 6.4 outcomes, book Section 6.5, OOD detection, semi-supervised learning, role of \(\lambda\), open directions | Book Ch. 6; Nalisnick et al. as support |
 | 5 | Conclusion | What Hybrid Modeling Contributes | Takeaways and significance | Synthesized from all sources |
 | 6 | References | References | Verified bibliography | All cited sources |
 
@@ -64,6 +73,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 #### 2.2 Normalizing Flows and Change of Variables
 
+- Use Chapter 4 of the book as the primary source for this subsection.
 - Define a normalizing flow as an invertible transformation between data \(x\) and latent variable \(z\).
 - Use one notation convention consistently. The book often writes \(z=f^{-1}(x)\); with this convention:
   \[
@@ -155,36 +165,48 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Make clear that the report should **not** include code from the book. It should explain the concepts and equations only.
 - Use Hoogeboom et al.'s results only as supporting evidence, not as the main empirical story: Table 3 reports competitive generative modeling in bits per dimension; Tables 1 and 2 report lossless-compression performance.
 
-**Possible figure:** Bipartite integer coupling layer showing split, neural transformation, rounding, and additive update.
+**Optional figure:** Bipartite integer coupling layer showing split, neural transformation, rounding, and additive update.
 
 ---
 
-### 4. Discussion — Applications, Robustness, and Limitations
+### 4. Discussion — What the HybridIDF Example Suggests
 
-**Goal:** Interpret what the hybrid model buys us, and where caution is needed.
+**Goal:** Interpret the book's HybridIDF example and "What's Next?" section without turning the discussion into a survey of the supplementary papers.
+
+**Scope:** Keep the full Discussion short, approximately 700--1,000 words in the final report. Prefer a few dense paragraphs over an expansive subsection-by-subsection survey.
+
+Begin with a compact discussion of the book's Fig. 6.4:
+
+- Explain what the four panels demonstrate at a high level: real images, unconditional generations, classification error during validation, and negative log-likelihood during validation.
+- Use Fig. 6.4 as the bridge from the technical construction to the broader question: what does the hybrid objective achieve, and what remains unresolved?
+- Do not overstate the empirical strength of this example. Treat it as an illustrative outcome of the book's implementation, not as a comprehensive benchmark.
 
 #### 4.1 Out-of-Distribution Detection
 
-- Explain the intended mechanism: \(p(x)\) can provide an input plausibility score before or alongside the predictive distribution.
-- Use Nalisnick et al.'s experiments as the main empirical support for OOD behavior:
+- Keep this subsection short and conceptual. Explain the intended mechanism: \(p(x)\) can provide an input plausibility score before or alongside the predictive distribution.
+- Connect back to the book's motivation from Chapter 1 and Chapter 6: hybrid modeling was introduced because \(p(y \mid x)\) alone cannot say whether \(x\) is familiar.
+- Use Nalisnick et al. only as supporting empirical evidence, not as the organizing center:
   - Table 1 and Figure 4 compare MNIST with NotMNIST as the OOD set.
   - Table 2 and Figure 5 compare SVHN with CIFAR-10 as the OOD set.
 - Avoid a universal claim that likelihood always solves OOD detection. Phrase the point as: likelihood gives a useful signal that must be validated empirically for the data and model family.
 
 #### 4.2 Semi-Supervised Learning
 
-- Explain why hybrid modeling naturally supports semi-supervised learning:
+- Base this subsection primarily on book Section 6.5. Explain why hybrid modeling naturally supports semi-supervised learning:
   - labeled data trains both \(p(y \mid x)\) and \(p(x)\),
   - unlabeled data can still train \(p(x)\),
   - the shared backbone can improve the representation available to the classifier.
-- Tie this point to the book's "What's Next?" section and to Nalisnick et al.'s Table 3, where adding unlabeled MNIST data improved the semi-supervised classifier relative to using 1000 labels alone.
+- Mention Nalisnick et al.'s Table 3 only briefly as supporting evidence that unlabeled MNIST data improved performance relative to using 1000 labels alone.
 
 #### 4.3 Limitations and Open Questions
 
-- The balancing factor \(\lambda\) requires tuning and can strongly shift behavior between predictive and generative performance.
-- The weighted objective is useful but not a fully normalized joint probability model when \(\lambda \neq 1\).
-- Exact likelihood is attractive, but likelihood alone is not the same as semantic understanding or calibrated uncertainty.
-- IDFs solve a discrete-data modeling issue, but the straight-through estimator creates biased gradients.
+This should be the strongest discussion subsection, but it should still stay compact. Group the book's Section 6.5 points into a few connected observations:
+
+- **Objective trade-off:** \(\lambda\) requires tuning, can shift behavior between predictive and generative performance, and is not derived from a clean normalized probability model.
+- **Extensions:** The hybrid idea extends beyond flows, for example to VAEs, but these variants may require variational bounds or different parameterizations.
+- **Future directions:** Alternative architectures or learning procedures may reduce or remove the need for \(\lambda\).
+- **Factorization choice:** \(p(y \mid x)p(x)\) is appropriate when reliable decision-making and input plausibility are central, while \(p(x \mid y)p(y)\) may be preferable for class-conditional generation.
+- **IDF caveat:** IDFs solve a discrete-data modeling issue, but the straight-through estimator introduces biased gradients.
 
 ---
 
@@ -216,8 +238,10 @@ Required takeaways:
 
 | Source | Use for |
 |---|---|
-| `resources/hybrid_modeling.pdf`, Chapter 6 | Main story, naive/shared parameterization, scale mismatch, weighted objective, HybridIDF formulation, semi-supervised outlook. |
-| `resources/nalisnick19b.pdf` | Deep invertible features, exact joint density, GLM framing, empirical OOD examples in Tables 1--2/Figures 4--5, semi-supervised result in Table 3, interpretation of \(\lambda\). |
+| `resources/hybrid_modeling.pdf`, Chapter 1 | Motivation for why \(p(y \mid x)\) alone is insufficient and why modeling \(p(x)\) helps with uncertainty-aware decision-making. |
+| `resources/hybrid_modeling.pdf`, Chapter 4 | Primary source for normalizing flows, invertibility, latent variables, and the change-of-variables formula used in Section 2. |
+| `resources/hybrid_modeling.pdf`, Chapter 6 | Main story, naive/shared parameterization, scale mismatch, weighted objective, HybridIDF formulation, Fig. 6.4 outcomes, and Section 6.5 discussion points. |
+| `resources/nalisnick19b.pdf` | Supporting context for deep invertible features, exact joint density, GLM framing, empirical OOD examples in Tables 1--2/Figures 4--5, semi-supervised result in Table 3, and interpretation of \(\lambda\). |
 | `resources/NeurIPS-2019-integer-discrete-flows-and-lossless-compression-Paper.pdf` | Integer Discrete Flows, integer discrete coupling, discrete likelihood without continuous Jacobian term, discretized logistic prior, rounding and STE, compression motivation and results. |
 
 ---
@@ -243,7 +267,8 @@ All figure assets are original conceptual redrafts. The `.drawio` files are edit
 - **Figure 3:** Naive separate models (`fig_6_1_naive_separate_models.png`), adapted conceptually from book Fig. 6.1.
 - **Figure 4:** Shared parameterization (`fig_6_2_shared_parameterization.png`), adapted conceptually from book Fig. 6.2.
 - **Figure 5:** Flow-based hybrid model (`fig_6_3_hybrid_flow_model.png`), adapted conceptually from book Fig. 6.3.
-- **Figure 6:** Integer discrete coupling layer with rounding and additive update, to be created later if the HybridIDF section needs a model-specific figure.
+- **Figure 6:** Book Fig. 6.4 outcomes, either described in text or redrawn as a compact conceptual results figure if the Discussion needs a visual bridge.
+- **Figure 7:** Integer discrete coupling layer with rounding and additive update, to be created later if the HybridIDF section needs a model-specific figure.
 - **Equation 1:** Joint factorization \(p(x,y)=p(y \mid x)p(x)\).
 - **Equation 2:** Naive log-joint with separate parameterizations and the resulting gradient decoupling.
 - **Equation 3:** Shared-parameter log-joint and shared-parameter gradient.
