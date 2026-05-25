@@ -21,22 +21,21 @@
 \maketitle
 
 \begin{abstract}
-Hybrid modeling combines predictive modeling with generative modeling by
-describing the joint distribution as \(p(x,y)=p(y\mid x)p(x)\). This
-factorization addresses a weakness of purely discriminative classifiers: a model
-for \(p(y\mid x)\) can still assign a confident class prediction to an input that
-lies far away from the training distribution. A model for \(p(x)\), in contrast,
-can provide information about whether the input itself is plausible. This report
-explains the motivation, mathematical background, and main construction of
-hybrid models with invertible feature representations. Normalizing flows provide
-the key building block because they transform data into latent variables through
-bijective maps and allow exact likelihood evaluation through the change of
-variables formula. The report follows the derivation from separate generative and
-predictive models to shared parameterization, explains the scale mismatch between
-classification and density terms, and introduces the weighted hybrid objective.
-It then presents Hybrid Integer Discrete Flows as a concrete model for
-integer-valued data and discusses the resulting benefits, limitations, and open
-questions.
+Hybrid modeling combines predictive and generative modeling by describing the
+joint distribution as \(p(x,y)=p(y\mid x)p(x)\). This factorization addresses a
+weakness of purely discriminative classifiers: a model for \(p(y\mid x)\) may
+assign a confident class prediction to an input that lies far away from the
+training distribution. A model for \(p(x)\), in contrast, provides information
+about whether the input itself is plausible. This report explains the motivation,
+mathematical background, and main construction of hybrid models with invertible
+feature representations. Normalizing flows provide the key building block because
+they transform data into latent variables through bijective maps and allow exact
+likelihood evaluation through the change of variables formula. The report follows
+the derivation from separate predictive and generative models to shared
+parameterization, explains the scale mismatch between classification and density
+terms, and introduces the weighted hybrid objective. It then presents Hybrid
+Integer Discrete Flows as a concrete model for integer-valued data and discusses
+the resulting benefits, limitations, and open questions.
 
 \keywords{Hybrid modeling \and Normalizing flows \and Invertible neural networks
 \and Integer discrete flows \and Out-of-distribution detection}
@@ -54,7 +53,8 @@ input \(x\) itself is typical of the training data. The model is asked to choose
 among known classes even when the input comes from an unfamiliar part of the
 input space.
 
-This limitation matters because confidence is not the same as understanding.
+This limitation matters because confidence is not the same as distributional
+awareness.
 A classifier can be far away from its training distribution and still assign a
 large probability to one class. From the perspective of the classifier, every
 input must pass through the same decision mechanism. If the model has no
@@ -91,8 +91,8 @@ also provide an input plausibility score.
 The direction of the factorization matters for the report's emphasis. The model
 does not abandon the supervised task; it keeps \(p(y\mid x)\) as the predictive
 component and adds \(p(x)\) as a model of the input distribution. Hybrid modeling
-is therefore best understood as distribution-aware prediction rather than as
-pure generation with labels attached.
+is therefore best understood as distribution-aware prediction, not as pure
+generation with labels attached.
 
 Figure~\ref{fig:disc-vs-hybrid} shows the basic contrast. A discriminative
 classifier learns a decision boundary. A point far from the observed data can
@@ -134,8 +134,8 @@ The distinction between discriminative and generative modeling is a useful
 starting point. A discriminative model learns \(p(y\mid x)\), the distribution
 over targets given an input. For classification, this distribution is often
 parameterized by a neural network followed by a softmax layer. The model is
-optimized to separate labels well, and the geometry of the learned representation
-is shaped by predictive performance.
+optimized for predictive performance, so its representation is shaped by label
+separation rather than by the full structure of the input distribution.
 
 A generative model for the same input instead learns \(p(x)\). This distribution
 does not directly answer which class label is correct, but it describes where
@@ -153,6 +153,12 @@ the goal is not primarily to sample an object from a chosen class, but to suppor
 prediction while retaining information about whether the input itself is
 plausible.
 
+The central technical question is how to make the two factors interact during
+learning. If the classifier and density model are trained independently, their
+scores can be combined, but their representations do not influence each other.
+The more interesting case is shared representation learning, where predictive
+and generative gradients shape the same parameters.
+
 \subsection{Normalizing Flows and Change of Variables}
 
 Hybrid models need a tractable model for \(p(x)\). Chapter~4 of the book
@@ -167,7 +173,7 @@ latent variables. The latent distribution \(\pi(z)\) is chosen to be simple, for
 example a standard Gaussian distribution. The invertible transformation then
 warps this simple distribution into a more flexible distribution over \(x\).
 
-The word ``invertible'' is crucial. In a standard feed-forward classifier, a
+Invertibility is crucial. In a standard feed-forward classifier, a
 feature extractor may intentionally discard information that is irrelevant for
 label prediction. Such compression can help classification, but it makes exact
 density evaluation difficult because the original input cannot be reconstructed
@@ -191,7 +197,7 @@ dependency on the observed input. The base-density term measures whether the
 latent representation is plausible under \(\pi\). The Jacobian term corrects for
 the local volume change induced by the transformation.
 
-The Jacobian determinant is easiest to interpret geometrically. If the mapping
+The Jacobian determinant has a geometric interpretation. If the mapping
 expands a small region of latent space into a larger region of data space, then
 probability mass becomes spread out and the density decreases. If the mapping
 contracts volume, the density increases. The determinant in
@@ -243,7 +249,8 @@ This design creates a useful tension. A purely discriminative representation can
 collapse directions that do not affect the label, while a density model cannot
 freely discard such directions because it must still explain the input. A hybrid
 representation therefore has the potential to be more informative than a
-classifier-only representation. At the same time, the two goals need not agree.
+classifier-only representation. At the same time, the predictive and generative
+objectives can pull the shared representation in different directions.
 Some details of an image may be important for likelihood but irrelevant for the
 label; some label-discriminating features may represent small differences in
 density. The weighted objective is the mechanism used to manage this tension.
@@ -305,6 +312,12 @@ combined after training, but they do not learn a common representation. The labe
 information does not shape the density model, and the density objective does not
 shape the classifier.
 
+The zero terms in Eqs.~\eqref{eq:book-6-3} and~\eqref{eq:book-6-4} are the key
+diagnostic: the two distributions are connected only by addition of their scores,
+not by shared learning. The naive construction therefore misses the main promise
+of hybrid modeling, namely that label information and input-density information
+can shape a common representation.
+
 Figure~\ref{fig:naive-model} illustrates this naive construction. The input is
 fed into two separate networks. One network models \(p_{\alpha}(y\mid x)\), the
 other models \(p_{\beta}(x)\), and the log-probability terms are added. This
@@ -338,6 +351,12 @@ from the predictive term and the generative term. In the language of
 representation learning, the model no longer learns two unrelated views of
 \(x\); it learns a common representation that must support both class prediction
 and density modeling.
+
+This parameter sharing turns the joint model into a genuine hybrid architecture.
+The parameters \(\alpha\) and \(\beta\) can specialize the predictive and
+generative heads, but the shared part \(\gamma\) is optimized by both terms.
+This design is useful only if the two objectives can be balanced; otherwise, the
+larger term can dominate the shared representation.
 
 Figure~\ref{fig:shared-model} shows this shared construction. A common
 representation network processes the input and feeds both a predictive head and
@@ -431,6 +450,12 @@ that this expression is not derived as the log of a normalized probabilistic
 model. It is a useful training rule, but it gives up some of the elegance of
 ordinary likelihood maximization.
 
+This observation is important for interpreting the method. The problem is not
+that Eq.~\eqref{eq:book-6-8} cannot be optimized; the problem is that the
+objective no longer has the same clean likelihood interpretation as
+Eq.~\eqref{eq:book-6-1}. Hybrid modeling therefore has to trade probabilistic
+elegance against optimization control.
+
 \subsection{Weighted Hybrid Objective with Invertible Features}
 
 The weighted objective used for the flow-based hybrid model instead weights only
@@ -456,11 +481,12 @@ maximize. In implementation, one would usually minimize the negative of this
 quantity over a dataset. The sign convention is less important than the
 relative weighting. When \(\lambda=0\), the objective reduces to the supervised
 log-probability of the label. When \(\lambda=1\), the objective coincides with
-the ordinary log-joint under the factorization in Eq.~\eqref{eq:book-6-1}, as
-long as the modeled factors are normalized. Other values of \(\lambda\) produce
-a trade-off objective. Those values are often the interesting ones in practice,
-because they can prevent the high-dimensional density term from overwhelming
-the classification term.
+the ordinary log-joint under Eq.~\eqref{eq:book-6-1}, provided that both factors
+are normalized. Other values of \(\lambda\) are better interpreted as controlled
+training criteria, not automatically as log-likelihoods of new normalized joint
+distributions. This distinction prevents a common misunderstanding: the weighted
+objective is useful exactly because it trades probabilistic elegance for
+optimization control.
 
 The hyperparameter \(\lambda\) therefore has both an optimization role and a
 modeling role. A small value makes the model close to a classifier with a weak
@@ -489,46 +515,22 @@ Fig.~6.3~\cite{tomczak2024deep}.}
 \label{fig:hybrid-flow}
 \end{figure}
 
-For classification, the conditional model can be written as a categorical
-distribution:
-\begin{equation}
-p(y\mid x)
-=
-\prod_{k=1}^{K}\theta_k(x)^{[y=k]}.
-\tag{6.10}
-\label{eq:book-6-10}
-\end{equation}
-Here \(\theta_k(x)\) is the softmax probability of class \(k\), and \([y=k]\) is
-the Iverson bracket, equal to one when \(y=k\) and zero otherwise. For the
-generative component, a continuous flow gives
-\begin{equation}
-p(x)
-=
-\pi\!\left(z=f^{-1}(x)\right)|J_f(x)|^{-1}.
-\tag{6.11}
-\label{eq:book-6-11}
-\end{equation}
-Substituting the categorical model and the flow likelihood into
-Eq.~\eqref{eq:book-6-9} gives the flow-based hybrid objective:
-\begin{equation}
-\ell(x,y;\lambda)
-=
-\sum_{k=1}^{K}[y=k]\ln\theta_{k,g,f}(x)
-+
-\lambda
-\left[
-\ln\mathcal{N}\!\left(z=f^{-1}(x)\mid 0,I\right)
--
-\ln|J_f(x)|
-\right].
-\tag{6.12}
-\label{eq:book-6-12}
-\end{equation}
-The notation \(\theta_{k,g,f}\) indicates that the class probability depends on
-the invertible transformation \(f\) and the predictive head \(g\). The first term
-is the classification log-probability. The second term is the flow
-log-likelihood, scaled by \(\lambda\). Thus a single objective trains both the
-predictive head and the generative backbone.
+The rest of the book's derivation instantiates Eq.~\eqref{eq:book-6-9} for a
+classifier and a flow model. The predictive term is an ordinary categorical
+classifier: for the observed label \(y\), the log-probability selects the
+corresponding softmax value \(\theta_{y,g,f}(x)\). The subscripts indicate that
+the class probability depends on both the invertible transformation \(f\) and the
+predictive head \(g\). The generative term is the flow likelihood from
+Section~\ref{sec:background}: the input is mapped to \(z=f^{-1}(x)\), evaluated
+under the base density \(\pi(z)\), and corrected by the Jacobian term \(J_f\).
+
+In this sense, the book's Eqs.~6.10--6.12 do not introduce a new conceptual
+step. They write out the same weighted objective from Eq.~\eqref{eq:book-6-9}
+for the concrete case of a categorical classifier and a continuous flow with a
+Gaussian base density. The important message is that the classifier receives the
+same invertible features that are used for likelihood evaluation. The learned
+representation must therefore be predictive for \(y\) while still supporting a
+valid density model for \(x\).
 
 \subsection{Hybrid Integer Discrete Flows}
 
@@ -546,67 +548,16 @@ states. Digital images and lossless compression tasks care about exact stored
 integer values. IDFs keep the model aligned with that representation instead of
 introducing a continuous relaxation as the main object of modeling.
 
-The key mathematical simplification is that the discrete change of variables
-formula has no continuous volume correction. For a bijection on integer-valued
-states,
-\begin{equation}
-p(x)=\pi\!\left(z=f^{-1}(x)\right).
-\label{eq:discrete-flow}
-\end{equation}
-The transformation reassigns probability mass from one discrete state to
-another. There is no infinitesimal volume element to correct, so no Jacobian
-determinant appears. This simplification is specific to the discrete setting and
-should not be confused with a continuous transformation whose determinant
-happens to equal one.
+The key mathematical simplification is that a discrete bijection reassigns
+probability mass between integer states. There is no infinitesimal volume element
+to correct, so the continuous Jacobian term disappears. The density term is then
+computed by evaluating the base probability mass at the latent state
+\(z=f^{-1}(x)\). In the HybridIDF example, this base distribution is a
+discretized logistic mass \(\operatorname{DL}(z\mid\mu,\nu)\), which is suitable
+for ordinal integer values because nearby integers remain related.
 
-Integer discrete coupling layers provide a practical way to construct such
-transformations. A simple bipartite layer splits the input into two parts. One
-part is copied, and the other part is shifted by an integer-valued translation:
-\begin{equation}
-y_a=x_a,
-\qquad
-y_b=x_b+\lfloor t(x_a)\rceil.
-\label{eq:idf-coupling}
-\end{equation}
-The inverse subtracts the same rounded translation. Rounding is needed because
-the representation must remain integer-valued. However, rounding is
-non-differentiable in the usual gradient sense. Training therefore uses the
-straight-through estimator, which treats the rounding operation approximately as
-the identity during the backward pass~\cite{hoogeboom2019integer}. This trick
-makes gradient-based training possible, but it also introduces biased gradients.
-
-The straight-through estimator is a pragmatic compromise. In the forward pass,
-rounding enforces the mathematical constraint that the transformation maps
-integer states to integer states. In the backward pass, the derivative of
-rounding would be zero or undefined in ways that block useful gradient
-information. The straight-through estimator bypasses that obstacle by using an
-approximate derivative. This approximation is biased, so it should not be
-mistaken for exact gradient computation. Nevertheless, it enables the training
-of integer-preserving flow layers with standard gradient-based optimization.
-
-The base distribution for IDFs is typically chosen as a discretized logistic
-distribution or a mixture of such distributions. A factorized prior can be
-written as
-\begin{equation}
-\pi(z)
-=
-\prod_{d=1}^{D}\operatorname{DL}(z_d\mid \mu_d,\nu_d),
-\label{eq:dl-prior}
-\end{equation}
-where \(\operatorname{DL}\) denotes the probability mass assigned to an integer
-bin by a logistic distribution. For a single integer value,
-\begin{equation}
-\operatorname{DL}(z\mid \mu,\nu)
-=
-\sigma\!\left(\frac{z+0.5-\mu}{\nu}\right)
--
-\sigma\!\left(\frac{z-0.5-\mu}{\nu}\right),
-\label{eq:dl-mass}
-\end{equation}
-with \(\sigma\) denoting the logistic sigmoid. This prior respects the ordinal
-structure of integer data: nearby integer values remain related.
-
-Combining the classifier with the discrete flow gives the HybridIDF objective:
+The resulting HybridIDF objective is the discrete analogue of the continuous
+hybrid objective:
 \begin{equation}
 \ell(x,y;\lambda)
 =
@@ -617,23 +568,21 @@ Combining the classifier with the discrete flow gives the HybridIDF objective:
 \tag{6.13}
 \label{eq:book-6-13}
 \end{equation}
-This expression mirrors the continuous-flow objective but removes the Jacobian
-term. The classifier still uses features produced by the invertible
-transformation, and the density term still trains the model to assign
-probability mass to the observed input. The difference is that all
-transformations preserve integer-valued states. The result is a hybrid model
-that can be applied to discrete data without inserting a continuous
-dequantization step into the main formulation.
+The classification log-probability stays in place, while the flow likelihood
+term is replaced by a weighted discretized-logistic mass. The classifier still
+uses features produced by the invertible transformation, and the density term
+still trains the model to assign probability mass to the observed input. The
+difference is that all transformations preserve integer-valued states.
 
-The comparison between Eqs.~\eqref{eq:book-6-12} and~\eqref{eq:book-6-13}
-summarizes the role of HybridIDF in Chapter~6. The high-level hybrid structure
-does not change: a classification log-probability is combined with a weighted
-generative term. What changes is the form of the generative likelihood. In the
-continuous case, likelihood requires a base density and a Jacobian correction.
-In the integer discrete case, likelihood requires a base probability mass. This
-change makes the model better matched to integer-valued observations, but it
-also moves the burden into the design of integer-preserving transformations and
-the training approximation used for rounding.
+The implementation details of IDFs are important but secondary for the hybrid
+modeling argument. IDFs use integer-preserving coupling layers with rounded
+translations. Rounding keeps the states discrete, but it is not differentiable,
+so training relies on the straight-through estimator, which treats rounding
+approximately as the identity during backpropagation~\cite{hoogeboom2019integer}.
+This estimator makes gradient-based learning possible but introduces biased
+gradients. Thus HybridIDF shows that the hybrid objective can be adapted to
+discrete data, while also revealing the additional engineering compromises
+required by integer-valued invertible models.
 
 \section{Discussion}
 \label{sec:discussion}
@@ -673,7 +622,9 @@ likelihood-based evaluations~\cite{nalisnick2019hybrid}. These examples support
 the idea that \(p(x)\) can help detect unfamiliar inputs. However, the conclusion
 should remain modest. Likelihood is a useful signal, not a universal solution to
 out-of-distribution detection. Its reliability depends on the data, the model
-family, and the evaluation setting.
+family, and the evaluation setting. In high-dimensional data, likelihood can also
+reflect low-level statistics that are not identical to semantic familiarity, so
+density-based rejection must be validated for the specific task.
 
 The second implication concerns semi-supervised learning. The hybrid objective
 naturally separates labeled and unlabeled contributions. For labeled data, the
@@ -733,8 +684,9 @@ The weighted objective \(\ell(x,y;\lambda)\) is the technical hinge of the
 framework. It compensates for the scale mismatch between a low-dimensional label
 term and a high-dimensional input likelihood term. At the same time, it
 introduces a hyperparameter and weakens the clean likelihood interpretation of
-the objective. This trade-off is not a minor implementation detail; it is one of
-the main conceptual tensions in hybrid modeling.
+the objective when \(\lambda\neq 1\). This trade-off is not a minor implementation
+detail; it is the point where the probabilistic model becomes a practical
+learning criterion.
 
 HybridIDF shows how the framework can be adapted to integer-valued data. By
 using discrete bijections, the model avoids the continuous Jacobian term and
@@ -746,9 +698,9 @@ requires an approximate gradient estimator.
 The broader lesson is that reliable decision-making benefits from both
 predictive accuracy and a model of where the data distribution lies. Hybrid
 models do not remove all difficulties of uncertainty estimation, but they make
-the missing piece explicit. They ask a classifier not only to decide what an
-input is, but also to model whether the input belongs to the world it has learned
-to understand.
+the missing question explicit: a classifier should not only decide which label an
+input receives, but also whether the input is plausible under the distribution it
+has learned.
 
 \bibliographystyle{splncs04}
 \bibliography{references}
