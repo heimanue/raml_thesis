@@ -186,16 +186,17 @@ the ability to compute the probability of the original input.
 For continuous variables, the likelihood follows from the change of variables
 formula:
 \begin{equation}
-p(x)=\pi\!\left(z=f^{-1}(x)\right)|J_f(x)|^{-1}.
+p(x)=\pi(z)\left|J_f(z)\right|^{-1}.
 \label{eq:flow-likelihood}
 \end{equation}
-Here \(J_f\) denotes the Jacobian determinant associated with the transformation
-from latent space to data space. More precisely, the determinant is evaluated at
-the latent point corresponding to \(x\). The shorthand in
-Eq.~\eqref{eq:flow-likelihood} follows the book's notation and emphasizes the
-dependency on the observed input. The base-density term measures whether the
-latent representation is plausible under \(\pi\). The Jacobian term corrects for
-the local volume change induced by the transformation.
+Here \(z=f^{-1}(x)\), and \(J_f(z)\) denotes the Jacobian matrix of the
+transformation from latent space to data space at that latent point. The vertical
+bars denote the absolute determinant of this matrix. The book sometimes writes
+this dependency more compactly as \(|J_f(x)|\), but the transformation \(f\)
+itself acts on the latent point corresponding to the observed input. The
+base-density term measures whether the latent representation is plausible under
+\(\pi\). The determinant term corrects for the local volume change induced by
+the transformation.
 
 The Jacobian determinant has a geometric interpretation. If the mapping
 expands a small region of latent space into a larger region of data space, then
@@ -204,12 +205,14 @@ contracts volume, the density increases. The determinant in
 Eq.~\eqref{eq:flow-likelihood} performs exactly this correction. Without the
 correction, the model would treat the base density value at \(z=f^{-1}(x)\) as
 the data density, ignoring the fact that the transformation may stretch or
-compress space. The change of variables formula is therefore what turns an
-invertible neural network into a normalized probability density.
+compress space. The change of variables formula is therefore what allows an
+invertible neural network, together with a base distribution, to define a valid
+probability density over inputs.
 
 Flows become especially useful when \(f\) is built as a composition of
-invertible functions. If \(f=f_K\circ\cdots\circ f_1\), then the log-likelihood
-can be written as a base log-density minus a sum of log-Jacobian terms:
+invertible functions. If \(f=f_K\circ\cdots\circ f_1\) and
+\(z_i=f_i(z_{i-1})\) with \(z_K=x\), then the log-likelihood can be written as a
+base log-density minus a sum of log-Jacobian terms:
 \begin{equation}
 \ln p(x)
 =
