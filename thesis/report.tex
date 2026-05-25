@@ -261,16 +261,26 @@ density. The weighted objective is the mechanism used to manage this tension.
 \section{Main Content / Results}
 \label{sec:main}
 
+The previous section introduced the two ingredients needed for hybrid modeling:
+a predictive component \(p(y\mid x)\) and a tractable density model \(p(x)\).
+This section explains how these ingredients are combined into a single training
+objective. The key issue is not the factorization itself, which follows directly
+from probability theory, but the interaction between representation sharing,
+gradient flow, and scale. The derivation therefore proceeds in three steps: a
+naive combination with separate parameters, a shared parameterization, and a
+weighted objective that controls the balance between classification and density
+modeling.
+
 \subsection{Naive Composition and Shared Parameterization}
 
-The hybrid modeling chapter starts from the joint factorization
+The natural starting point is the joint distribution of inputs and labels. In
+the factorization used throughout the book, this joint distribution is written as
 \begin{equation}
 p(x,y)=p(y\mid x)p(x).
 \tag{6.1}
 \label{eq:book-6-1}
 \end{equation}
-Equation~\eqref{eq:book-6-1} is the conceptual starting point for the whole
-construction. It states that the model should assign high joint probability only
+It states that the model should assign high joint probability only
 when two conditions hold at the same time: the label is likely given the input,
 and the input is likely under the data distribution. A confident class
 prediction is not enough if the input itself has low plausibility. Likewise, a
@@ -412,30 +422,12 @@ term. Without an explicit balancing mechanism, the shared representation can be
 pulled toward density modeling and away from the classification behavior that
 motivated the hybrid model in the first place.
 
-For the shared model, the unweighted objective is still the log-joint:
-\begin{equation}
-\ln p(x,y)
-=
-\ln p_{\alpha,\gamma}(y\mid x)
-+
-\ln p_{\beta,\gamma}(x).
-\tag{6.6}
-\label{eq:book-6-6}
-\end{equation}
-The gradient with respect to the shared parameters is
-\begin{equation}
-\nabla_{\gamma}\ln p(x,y)
-=
-\nabla_{\gamma}\ln p_{\alpha,\gamma}(y\mid x)
-+
-\nabla_{\gamma}\ln p_{\beta,\gamma}(x).
-\tag{6.7}
-\label{eq:book-6-7}
-\end{equation}
-If the second term is numerically much larger, the shared representation may
-become more useful for density modeling than for classification. This behavior
-can hurt the predictive component, even though the architecture shares
-parameters in a principled way.
+Since both terms now depend on the shared parameters \(\gamma\), the update of
+the common representation receives contributions from both the classification
+term and the density term. If the density contribution is numerically much
+larger, the shared representation may become more useful for density modeling
+than for classification. This behavior can hurt the predictive component, even
+though the architecture shares parameters in a principled way.
 
 One possible correction is a convex combination:
 \begin{equation}
@@ -461,8 +453,8 @@ elegance against optimization control.
 
 \subsection{Weighted Hybrid Objective with Invertible Features}
 
-The weighted objective used for the flow-based hybrid model instead weights only
-the density term:
+The flow-based hybrid model uses a slightly different weighting scheme: only the
+density term is scaled.
 \begin{equation}
 \ell(x,y;\lambda)
 =
@@ -471,32 +463,19 @@ the density term:
 \tag{6.9}
 \label{eq:book-6-9}
 \end{equation}
-The parameter \(\lambda\) controls the relative influence of the generative
-component. Smaller values emphasize classification; larger values emphasize
-density modeling. This objective should be understood as a practical training
-criterion, not as a clean normalized joint likelihood when \(\lambda\neq 1\).
-Nalisnick et al. discuss related interpretations in terms of robustness and
-Jacobian-based regularization~\cite{nalisnick2019hybrid}, but the report treats
-\(\lambda\) primarily as a balancing hyperparameter.
-
-The notation \(\ell(x,y;\lambda)\) follows the book and denotes an objective to
-maximize. In implementation, one would usually minimize the negative of this
-quantity over a dataset. The sign convention is less important than the
-relative weighting. When \(\lambda=0\), the objective reduces to the supervised
-log-probability of the label. When \(\lambda=1\), the objective coincides with
-the ordinary log-joint under Eq.~\eqref{eq:book-6-1}, provided that both factors
-are normalized. Other values of \(\lambda\) are better interpreted as controlled
-training criteria, not automatically as log-likelihoods of new normalized joint
-distributions. This distinction prevents a common misunderstanding: the weighted
-objective is useful exactly because it trades probabilistic elegance for
-optimization control.
-
-The hyperparameter \(\lambda\) therefore has both an optimization role and a
-modeling role. A small value makes the model close to a classifier with a weak
-generative auxiliary term. A larger value asks the representation to preserve
-more information about the input distribution. The best choice depends on
-whether the application values predictive accuracy, input plausibility, or a
-balanced compromise between both.
+The parameter \(\lambda\) addresses the scale issue from the previous subsection
+by controlling the relative influence of the generative component. It should be
+understood as a balancing hyperparameter rather than as a parameter derived from
+a normalized probabilistic model. The notation
+\(\ell(x,y;\lambda)\) follows the book and denotes an objective to maximize; in
+implementation, one would usually minimize its negative. When \(\lambda=0\), the
+objective reduces to supervised classification. When \(\lambda=1\), it coincides
+with the ordinary log-joint under Eq.~\eqref{eq:book-6-1}, provided that both
+factors are normalized. Other values of \(\lambda\) are better interpreted as
+controlled training criteria. Nalisnick et al. discuss related interpretations
+in terms of robustness and Jacobian-based regularization~\cite{nalisnick2019hybrid},
+but for the present purpose \(\lambda\) is best read as a practical balancing
+parameter.
 
 Figure~\ref{fig:hybrid-flow} shows the flow-based version of the hybrid model.
 The invertible backbone maps \(x\) to latent features \(z=f^{-1}(x)\). These
@@ -518,22 +497,23 @@ Fig.~6.3~\cite{tomczak2024deep}.}
 \label{fig:hybrid-flow}
 \end{figure}
 
-The rest of the book's derivation instantiates Eq.~\eqref{eq:book-6-9} for a
-classifier and a flow model. The predictive term is an ordinary categorical
-classifier: for the observed label \(y\), the log-probability selects the
-corresponding softmax value \(\theta_{y,g,f}(x)\). The subscripts indicate that
-the class probability depends on both the invertible transformation \(f\) and the
-predictive head \(g\). The generative term is the flow likelihood from
-Section~\ref{sec:background}: the input is mapped to \(z=f^{-1}(x)\), evaluated
-under the base density \(\pi(z)\), and corrected by the Jacobian term \(J_f\).
+The objective in Eq.~\eqref{eq:book-6-9} becomes concrete once both terms are
+parameterized. The predictive term is the log-probability assigned by the
+classifier to the observed label \(y\), computed from the invertible features
+\(z=f^{-1}(x)\) and a predictive head \(g\). The generative term is the flow
+likelihood introduced in Section~\ref{sec:background}: the same latent
+representation is evaluated under the base density \(\pi(z)\) and corrected by
+the Jacobian term \(J_f\). Concretely, the first term becomes the selected
+softmax log-probability \(\ln \theta_{y,g,f}(x)\), while the second term becomes
+the flow log-likelihood
+\(\ln \pi(z)-\ln |J_f(z)|\), with \(z=f^{-1}(x)\).
 
-In this sense, the book's Eqs.~6.10--6.12 do not introduce a new conceptual
-step. They write out the same weighted objective from Eq.~\eqref{eq:book-6-9}
-for the concrete case of a categorical classifier and a continuous flow with a
-Gaussian base density. The important message is that the classifier receives the
-same invertible features that are used for likelihood evaluation. The learned
-representation must therefore be predictive for \(y\) while still supporting a
-valid density model for \(x\).
+The key point is therefore structural rather than algebraic. The classifier does
+not operate on a separate representation from the density model; both use the
+same invertible backbone. The learned representation must make labels
+predictable while still defining a tractable density for \(x\). This shared role
+is what makes the model hybrid rather than merely a classifier with an auxiliary
+score.
 
 \subsection{Hybrid Integer Discrete Flows}
 
