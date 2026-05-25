@@ -517,12 +517,12 @@ score.
 
 \subsection{Hybrid Integer Discrete Flows}
 
-The book then specializes the hybrid idea to Integer Discrete Flows. This case
-is important because many machine learning inputs are stored discretely. An
-8-bit image, for example, contains integer pixel values. Standard continuous
-flows are defined for continuous variables and often require dequantization or
-other adjustments when used on discrete data. Integer Discrete Flows avoid this
-mismatch by defining bijective transformations directly on integer-valued
+The flow-based objective above assumes a continuous density, which fits naturally
+with standard normalizing flows but is not always the most faithful model for
+data stored on a grid. An 8-bit image, for example, consists of integer pixel
+values. This motivates a discrete version of the same hybrid idea based on
+Integer Discrete Flows. Instead of requiring dequantization or other adjustments,
+IDFs define bijective transformations directly on integer-valued
 states~\cite{hoogeboom2019integer}.
 
 This distinction is important because a continuous density assigns probability
@@ -552,7 +552,7 @@ hybrid objective:
 \label{eq:book-6-13}
 \end{equation}
 The classification log-probability stays in place, while the flow likelihood
-term is replaced by a weighted discretized-logistic mass. The classifier still
+term is replaced by a weighted discretized-logistic log-mass. The classifier still
 uses features produced by the invertible transformation, and the density term
 still trains the model to assign probability mass to the observed input. The
 difference is that all transformations preserve integer-valued states.
