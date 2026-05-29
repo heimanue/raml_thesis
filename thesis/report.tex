@@ -77,7 +77,8 @@ the book~\cite{tomczak2024deep}.}
 \end{figure}
 
 Hybrid modeling addresses this problem by modeling the joint distribution of
-inputs and labels. The factorization used throughout this report is
+inputs and labels. Following the book's hybrid modeling chapter~\cite{tomczak2024deep},
+the factorization used throughout this report is
 \begin{equation}
 p(x,y)=p(y\mid x)p(x).
 \label{eq:joint-factorization}
@@ -106,12 +107,11 @@ useful density model?
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{fig_1_2_discriminative_vs_hybrid.png}
-\caption{Conceptual comparison between a purely discriminative classifier and a
+\caption{Comparison between a purely discriminative classifier and a
 hybrid model. A discriminative model assigns a class label based on the decision
 boundary even when a new point lies far from the training distribution. A hybrid
 model also evaluates \(p(x)\), so the same point can be treated as uncertain or
-out-of-distribution. The figure is an original conceptual redraw inspired by the
-book's motivation for hybrid modeling~\cite{tomczak2024deep}.}
+out-of-distribution. Reprinted from~\cite{tomczak2024deep}, Fig.~1.2.}
 \label{fig:disc-vs-hybrid}
 \end{figure}
 
@@ -274,7 +274,8 @@ modeling.
 \subsection{Naive Composition and Shared Parameterization}
 
 The natural starting point is the joint distribution of inputs and labels. In
-the factorization used throughout the book, this joint distribution is written as
+the factorization used throughout the book~\cite{tomczak2024deep}, this joint
+distribution is written as
 \begin{equation}
 p(x,y)=p(y\mid x)p(x).
 \tag{6.1}
@@ -397,8 +398,9 @@ may contain thousands of pixel values. As a result, the log-likelihood term
 \(\ln p(x)\) can dominate the gradient signal that reaches the shared
 representation.
 
-The book makes this point with a binary example. Suppose first that \(y\) is a
-binary label and the model assigns probability \(0.5\) to both classes. Then
+The book makes this point with a binary example~\cite{tomczak2024deep}. Suppose
+first that \(y\) is a binary label and the model assigns probability \(0.5\) to
+both classes. Then
 \[
 \ln \operatorname{Bern}(y\mid 0.5)=-\ln 2.
 \]
@@ -442,8 +444,8 @@ L(x,y;\lambda)
 \end{equation}
 This objective explicitly balances the two terms. However, the book emphasizes
 that this expression is not derived as the log of a normalized probabilistic
-model. It is a useful training rule, but it gives up some of the elegance of
-ordinary likelihood maximization.
+model~\cite{tomczak2024deep}. It is a useful training rule, but it gives up some
+of the elegance of ordinary likelihood maximization.
 
 This observation is important for interpreting the method. The problem is not
 that Eq.~\eqref{eq:book-6-8} cannot be optimized; the problem is that the
@@ -453,8 +455,8 @@ elegance against optimization control.
 
 \subsection{Weighted Hybrid Objective with Invertible Features}
 
-The flow-based hybrid model uses a slightly different weighting scheme: only the
-density term is scaled.
+The flow-based hybrid formulation in the book uses a slightly different
+weighting scheme: only the density term is scaled~\cite{tomczak2024deep}.
 \begin{equation}
 \ell(x,y;\lambda)
 =
@@ -525,11 +527,12 @@ Integer Discrete Flows. Instead of requiring dequantization or other adjustments
 IDFs define bijective transformations directly on integer-valued
 states~\cite{hoogeboom2019integer}.
 
-This distinction is important because a continuous density assigns probability
-to regions, whereas a discrete model assigns probability mass to individual
-states. Digital images and lossless compression tasks care about exact stored
-integer values. IDFs keep the model aligned with that representation instead of
-introducing a continuous relaxation as the main object of modeling.
+This distinction is important because a continuous density gives probabilities
+only after integration over regions, whereas a discrete model assigns probability
+mass directly to individual states. Digital images and lossless compression
+tasks care about exact stored integer values. IDFs keep the model aligned with
+that representation instead of introducing a continuous relaxation as the main
+object of modeling.
 
 The key mathematical simplification is that a discrete bijection reassigns
 probability mass between integer states. There is no infinitesimal volume element
@@ -537,10 +540,11 @@ to correct, so the continuous Jacobian term disappears. The density term is then
 computed by evaluating the base probability mass at the latent state
 \(z=f^{-1}(x)\). In the HybridIDF example, this base distribution is a
 discretized logistic mass \(\operatorname{DL}(z\mid\mu,\nu)\), which is suitable
-for ordinal integer values because nearby integers remain related.
+for ordinal integer values because nearby integers remain
+related~\cite{hoogeboom2019integer,tomczak2024deep}.
 
 The resulting HybridIDF objective is the discrete analogue of the continuous
-hybrid objective:
+hybrid objective from Chapter~6~\cite{tomczak2024deep}:
 \begin{equation}
 \ell(x,y;\lambda)
 =
@@ -572,7 +576,8 @@ required by integer-valued invertible models.
 
 The HybridIDF example in the book should be read as an illustrative outcome of
 the construction rather than as a broad benchmark. Figure~\ref{fig:hybrididf-outcomes}
-summarizes the types of evidence shown in the book's Fig.~6.4: real images,
+summarizes the types of evidence shown in the book's
+Fig.~6.4~\cite{tomczak2024deep}: real images,
 unconditional generations, validation classification error, and validation
 negative log-likelihood. Together these panels connect the theory to a trained
 model. The model has a predictive side, visible through the classification
@@ -588,11 +593,11 @@ no longer a balanced realization of the joint modeling idea.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{fig_6_4_hybrididf_outcomes.png}
-\caption{Schematic summary of the HybridIDF training outcomes discussed in the
-book's Fig.~6.4. The panels indicate the types of evidence shown there: real
-validation images, unconditional samples, validation classification error, and
-validation negative log-likelihood. This figure is an original conceptual redraw
-for explanation and does not reproduce the original images or curves.}
+\caption{An example of outcomes after training: (a) Randomly selected real
+images. (b) Unconditional generations from the HybridIDF. (c) An example of a
+validation curve for the classification error. (d) An example of a validation
+curve for the negative log-likelihood, i.e., $-\ln p(x)$. Reprinted
+from~\cite{tomczak2024deep}, Fig.~6.4.}
 \label{fig:hybrididf-outcomes}
 \end{figure}
 
@@ -634,17 +639,17 @@ longer corresponds to the ordinary log of a normalized joint distribution. This
 problem does not make the objective useless, but it does make the probabilistic
 interpretation less clean.
 
-The book's outlook points to several ways forward. Hybrid VAEs extend the same
-idea beyond flows, but they require a variational lower bound instead of exact
-likelihood evaluation. Other architectures or learning procedures may reduce the
-need for a manually tuned \(\lambda\). The choice of factorization also remains
-important. The factorization \(p(y\mid x)p(x)\) is well suited to reliable
-decision-making because it keeps input plausibility explicit. A factorization
-\(p(x\mid y)p(y)\) may be more natural when class-conditional generation is the
-main goal. Finally, HybridIDF illustrates both the strength and the cost of
-integer-valued flows: they match discrete data directly, but the rounding
-operation requires the straight-through estimator and therefore biased
-gradients.
+The book's outlook points to several ways forward~\cite{tomczak2024deep}. Hybrid
+VAEs extend the same idea beyond flows, but they require a variational lower
+bound instead of exact likelihood evaluation. Other architectures or learning
+procedures may reduce the need for a manually tuned \(\lambda\). The choice of
+factorization also remains important. The factorization \(p(y\mid x)p(x)\) is
+well suited to reliable decision-making because it keeps input plausibility
+explicit. A factorization \(p(x\mid y)p(y)\) may be more natural when
+class-conditional generation is the main goal. Finally, HybridIDF illustrates
+both the strength and the cost of integer-valued flows: they match discrete data
+directly, but the rounding operation requires the straight-through estimator and
+therefore biased gradients~\cite{hoogeboom2019integer}.
 
 \section{Conclusion}
 

@@ -1,0 +1,56 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="fig_6_1_naive_separate_models" name="fig_6_1_naive_separate_models">
+    <mxGraphModel dx="838" dy="514" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="980" pageHeight="440" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#0f172a;" value="Conceptual redraw of Fig. 6.1: naive composition with separate models" vertex="1">
+          <mxGeometry height="34" width="880" x="50" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=14;fontStyle=1;" value="input x" vertex="1">
+          <mxGeometry height="60" width="110" x="70" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ede9fe;strokeColor=#8b5cf6;strokeWidth=3;fontSize=13;" value="&lt;b&gt;classifier network&lt;br&gt;&lt;/b&gt;parameters alpha" vertex="1">
+          <mxGeometry height="90" width="195" x="285" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#e0f2fe;strokeColor=#38bdf8;strokeWidth=3;fontSize=13;" value="&lt;b&gt;generative network&lt;br&gt;&lt;/b&gt;parameters beta" vertex="1">
+          <mxGeometry height="90" width="195" x="285" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#8b5cf6;strokeWidth=2;fontSize=13;" value="&lt;b&gt;&lt;font style=&quot;font-size: 15px;&quot;&gt;p(y | x)&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="60" width="80" x="570" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffffff;strokeColor=#38BDF8;strokeWidth=2;fontSize=13;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;&lt;b&gt;p(x)&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="80" x="570" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" edge="1" parent="1" source="c4" style="endArrow=block;html=1;rounded=1;strokeWidth=2;strokeColor=#475569;fontSize=12;fontColor=#334155;" target="c5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" edge="1" parent="1" source="c4" style="endArrow=block;html=1;rounded=1;strokeWidth=2;strokeColor=#475569;fontSize=12;fontColor=#334155;" target="c6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" edge="1" parent="1" source="c5" style="endArrow=block;html=1;rounded=1;strokeWidth=2;strokeColor=#475569;fontSize=12;fontColor=#334155;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c13" edge="1" parent="1" source="c6" style="endArrow=block;html=1;rounded=1;strokeWidth=2;strokeColor=#475569;fontSize=12;fontColor=#334155;" target="c8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c16" edge="1" parent="1" style="endArrow=none;html=1;rounded=0;strokeWidth=2;strokeColor=#94a3b8;dashed=1;dashPattern=8 6;fontSize=12;fontColor=#64748b;" value="no shared parameters">
+          <mxGeometry relative="1" x="0.0189" y="14" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="520" y="88" as="sourcePoint" />
+            <mxPoint x="520" y="353" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c17" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#475569;" value="two objectives train independently" vertex="1">
+          <mxGeometry height="32" width="245" x="265" y="370" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
