@@ -31,8 +31,8 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 |---|---|
 | Title | Hybrid Modeling |
 | Author | Manuel Hein |
-| Abstract | Write after the main report is stable. |
-| Keywords | Decide during LaTeX drafting. |
+| Abstract | Completed in `thesis/report.tex`; it summarizes the joint factorization, invertible features, weighted objective, and HybridIDF case study. |
+| Keywords | Hybrid modeling; normalizing flows; invertible neural networks; integer discrete flows; out-of-distribution detection. |
 
 ---
 
@@ -68,8 +68,8 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 **Planned figures:**
 
+- Include `thesis/figures/fig_1_1_confidence_flip.png` before the joint factorization to give a concrete confidence-failure example.
 - Include `thesis/figures/fig_1_2_discriminative_vs_hybrid.png` after the motivation for \(p(x,y)=p(y \mid x)p(x)\). Use it to contrast decision-boundary reasoning with density-aware reasoning.
-- Optionally include `thesis/figures/fig_1_1_confidence_flip.png` before Fig. 1.2 if the introduction needs a concrete confidence-failure example and the page budget allows it.
 
 ---
 
@@ -89,8 +89,9 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Define a normalizing flow as an invertible transformation between data \(x\) and latent variable \(z\).
 - Use the book's notation consistently. The report should write \(z=f^{-1}(x)\) and express the continuous flow likelihood as:
   \[
-  p(x)=\pi(z=f^{-1}(x))|J_f(x)|^{-1}.
+  p(x)=\pi(z)|J_f(z)|^{-1}, \qquad z=f^{-1}(x).
   \]
+- The book sometimes writes the Jacobian dependency compactly as \(|J_f(x)|\); the current report explains this notation but uses the latent-point version for precision.
 - Explain the role of the Jacobian determinant as a volume-correction term in continuous spaces.
 - Keep the explanation didactic: the reader should understand why flows provide exact likelihoods and why invertibility matters.
 
@@ -130,8 +131,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 - Use the book's binary example: one binary label contributes roughly \(-\ln 2\), while a \(D\)-dimensional binary input contributes roughly \(-D\ln 2\) under uniform Bernoulli predictions.
 - State the consequence: without correction, the generative signal can dominate the shared representation and hurt classification.
 - Continue the equation chain from the book:
-  - Eq. 6.6 states the unweighted shared log-joint.
-  - Eq. 6.7 shows the shared-parameter gradient as a sum of discriminative and generative gradient contributions.
+  - Eq. 6.6 and Eq. 6.7 are important conceptually, but in the current draft they are handled in prose to keep the report less math-heavy.
   - Eq. 6.8 introduces the convex combination proposed in earlier work and explains why the book treats it as useful but not fully probabilistically elegant.
 
 #### 3.3 Weighted Hybrid Objective
@@ -146,7 +146,7 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 **Planned figure:** Include `thesis/figures/fig_6_3_hybrid_flow_model.png` after the weighted objective to show how the invertible backbone feeds both \(p(y \mid x)\) and \(p(x)\).
 
-#### 3.4 Case Study: Hybrid Integer Discrete Flows
+#### 3.4 Hybrid Integer Discrete Flows
 
 **Goal:** Ground the abstract objective in a concrete model for ordinal discrete data such as 8-bit images.
 
@@ -178,6 +178,8 @@ The report should explain **hybrid modeling as a way to combine reliable predict
 
 **Scope:** Keep the full Discussion short, approximately 700--1,000 words in the final report. Prefer a few dense paragraphs over an expansive subsection-by-subsection survey.
 
+The current LaTeX draft follows this compact paragraph structure rather than using explicit Discussion subsections. Keep it this way unless the discussion is expanded substantially.
+
 Begin with a compact discussion of the book's Fig. 6.4:
 
 - Explain what the four panels demonstrate at a high level: real images, unconditional generations, classification error during validation, and negative log-likelihood during validation.
@@ -185,26 +187,26 @@ Begin with a compact discussion of the book's Fig. 6.4:
 - Include a visual when discussing these outcomes. Prefer an adapted conceptual redraw or a correctly cited reproduction, depending on what is appropriate for the final submission rules.
 - Do not overstate the empirical strength of this example. Treat it as an illustrative outcome of the book's implementation, not as a comprehensive benchmark.
 
-#### 4.1 Out-of-Distribution Detection
+**Theme: Out-of-Distribution Detection**
 
-- Keep this subsection short and conceptual. Explain the intended mechanism: \(p(x)\) can provide an input plausibility score before or alongside the predictive distribution.
+- Keep this theme short and conceptual. Explain the intended mechanism: \(p(x)\) can provide an input plausibility score before or alongside the predictive distribution.
 - Connect back to the book's motivation from Chapter 1 and Chapter 6: hybrid modeling was introduced because \(p(y \mid x)\) alone cannot say whether \(x\) is familiar.
 - Use Nalisnick et al. only as supporting empirical evidence, not as the organizing center:
   - Table 1 and Figure 4 compare MNIST with NotMNIST as the OOD set.
   - Table 2 and Figure 5 compare SVHN with CIFAR-10 as the OOD set.
 - Avoid a universal claim that likelihood always solves OOD detection. Phrase the point as: likelihood gives a useful signal that must be validated empirically for the data and model family.
 
-#### 4.2 Semi-Supervised Learning
+**Theme: Semi-Supervised Learning**
 
-- Base this subsection primarily on book Section 6.5. Explain why hybrid modeling naturally supports semi-supervised learning:
+- Base this theme primarily on book Section 6.5. Explain why hybrid modeling naturally supports semi-supervised learning:
   - labeled data trains both \(p(y \mid x)\) and \(p(x)\),
   - unlabeled data can still train \(p(x)\),
   - the shared backbone can improve the representation available to the classifier.
 - Mention Nalisnick et al.'s Table 3 only briefly as supporting evidence that unlabeled MNIST data improved performance relative to using 1000 labels alone.
 
-#### 4.3 Limitations and Open Questions
+**Theme: Limitations and Open Questions**
 
-This should be the strongest discussion subsection, but it should still stay compact. Group the book's Section 6.5 points into a few connected observations:
+This should be the strongest discussion theme, but it should still stay compact. Group the book's Section 6.5 points into a few connected observations:
 
 - **Objective trade-off:** \(\lambda\) requires tuning, can shift behavior between predictive and generative performance, and is not derived from a clean normalized probability model.
 - **Extensions:** The hybrid idea extends beyond flows, for example to VAEs, but these variants may require variational bounds or different parameterizations.
@@ -256,36 +258,38 @@ All figure assets are original conceptual redrafts. The `.drawio` files are edit
 
 | Thesis figure role | Editable source | PNG for LaTeX | Placement |
 |---|---|---|---|
-| Optional confidence-flip example, based on book Fig. 1.1 | `thesis/figures/fig_1_1_confidence_flip.drawio` | `thesis/figures/fig_1_1_confidence_flip.png` | Introduction, before the discriminative-vs-hybrid motivation if space allows. |
+| Confidence-flip example, based on book Fig. 1.1 | `thesis/figures/fig_1_1_confidence_flip.drawio` | `thesis/figures/fig_1_1_confidence_flip.png` | Introduction, before the joint factorization. |
 | Discriminative vs. density-aware decision-making, based on book Fig. 1.2 | `thesis/figures/fig_1_2_discriminative_vs_hybrid.drawio` | `thesis/figures/fig_1_2_discriminative_vs_hybrid.png` | Introduction, after introducing \(p(x,y)=p(y \mid x)p(x)\). |
 | Naive separate parameterizations, based on book Fig. 6.1 | `thesis/figures/fig_6_1_naive_separate_models.drawio` | `thesis/figures/fig_6_1_naive_separate_models.png` | Main Content / Results, Section 3.1. |
 | Shared parameterization, based on book Fig. 6.2 | `thesis/figures/fig_6_2_shared_parameterization.drawio` | `thesis/figures/fig_6_2_shared_parameterization.png` | Main Content / Results, Section 3.1, immediately after the naive setup. |
 | Flow-based hybrid model, based on book Fig. 6.3 | `thesis/figures/fig_6_3_hybrid_flow_model.drawio` | `thesis/figures/fig_6_3_hybrid_flow_model.png` | Main Content / Results, Section 3.3, after the weighted objective. |
+| HybridIDF outcomes, based on book Fig. 6.4 | `thesis/figures/fig_6_4_hybrididf_outcomes.drawio` | `thesis/figures/fig_6_4_hybrididf_outcomes.png` | Discussion, opening paragraph on the book's HybridIDF example. |
 
 ---
 
 ## Figure and Equation Plan
 
-- **Figure 1:** Optional confidence-flip example (`fig_1_1_confidence_flip.png`), adapted conceptually from book Fig. 1.1.
+- **Figure 1:** Confidence-flip example (`fig_1_1_confidence_flip.png`), adapted conceptually from book Fig. 1.1.
 - **Figure 2:** Discriminative vs. density-aware decision-making (`fig_1_2_discriminative_vs_hybrid.png`), adapted conceptually from book Fig. 1.2.
 - **Figure 3:** Naive separate models (`fig_6_1_naive_separate_models.png`), adapted conceptually from book Fig. 6.1.
 - **Figure 4:** Shared parameterization (`fig_6_2_shared_parameterization.png`), adapted conceptually from book Fig. 6.2.
 - **Figure 5:** Flow-based hybrid model (`fig_6_3_hybrid_flow_model.png`), adapted conceptually from book Fig. 6.3.
-- **Figure 6:** Book Fig. 6.4 outcomes. Include a visual if the Discussion talks about these outcomes; prefer an adapted conceptual redraw unless a direct reproduction is explicitly allowed.
+- **Figure 6:** HybridIDF outcomes (`fig_6_4_hybrididf_outcomes.png`), adapted conceptually from book Fig. 6.4.
 - **Equation 1:** Joint factorization \(p(x,y)=p(y \mid x)p(x)\).
 - **Equation 2:** Naive log-joint with separate parameterizations and the resulting gradient decoupling.
-- **Equation 3:** Shared-parameter log-joint and shared-parameter gradient.
+- **Equation 3:** Shared-parameter log-joint; the shared-parameter gradient is explained in prose rather than displayed.
 - **Equation 4:** Scale-mismatch illustration using the binary-label and \(D\)-dimensional binary-input example.
-- **Equation 5:** Weighted hybrid objective \(\ell(x,y;\lambda)\), corresponding to the book's Eq. 6.9.
-- **Equation 6:** Change-of-variables formula using the chosen \(f\) convention.
-- **Equation 7:** Discrete-flow likelihood \(p(x)=\pi(z=f^{-1}(x))\).
-- **Equation 8:** Discretized logistic probability mass for integer-valued latent variables, if the IDF section needs one additional concrete formula.
+- **Equation 5:** Convex-combination objective \(L(x,y;\lambda)\), corresponding to the book's Eq. 6.8.
+- **Equation 6:** Weighted hybrid objective \(\ell(x,y;\lambda)\), corresponding to the book's Eq. 6.9.
+- **Equation 7:** Change-of-variables formula and flow log-likelihood using the chosen \(f\) convention.
+- **Equation 8:** HybridIDF objective \(\ell(x,y;\lambda)\), corresponding to the book's Eq. 6.13.
 
 ---
 
-## Open Questions / Placeholders
+## Current Draft Status
 
-- [ ] Extract exact bibliographic metadata for all cited sources into a `.bib` file.
-- [ ] Decide final keywords for the LNCS template.
-- [ ] Create or source the Fig. 6.4 visual before drafting the Discussion.
-- [ ] Add LaTeX labels and final captions for the created figures during thesis drafting.
+- [x] Bibliographic metadata is stored in `thesis/references.bib`.
+- [x] Final keywords are set in the LNCS template.
+- [x] Figure 6.4 has an adapted conceptual redraw in editable `.drawio` and `.png` form.
+- [x] LaTeX labels and captions are present for all included figures.
+- [x] Citations were audited against the three provided source PDFs.

@@ -68,11 +68,10 @@ alone has no explicit notion of input plausibility.
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{fig_1_1_confidence_flip.png}
-\caption{Conceptual illustration of a confidence failure. A small change in the
-input can shift the class probabilities of a purely predictive model, because
-the model must still assign probability mass over the available labels. The
-figure is an original conceptual redraw inspired by the motivating example in
-the book~\cite{tomczak2024deep}.}
+\caption{An example of adding noise to an almost perfectly classified image
+that results in a shift of predicted label. Since a discriminative model must
+always assign probability mass to some class, it provides no signal that the
+perturbed input is unusual. Reprinted from~\cite{tomczak2024deep}, Fig.~1.1.}
 \label{fig:confidence-flip}
 \end{figure}
 
@@ -340,7 +339,7 @@ possibility that the two objectives could help each other.
 
 \begin{figure}
 \centering
-\includegraphics[width=.92\textwidth]{fig_6_1_naive_separate_models.png}
+\includegraphics[width=.65\textwidth]{fig_6_1_naive_separate_models.png}
 \caption{Naive construction of the joint model with separate parameterizations
 for \(p_{\alpha}(y\mid x)\) and \(p_{\beta}(x)\). The log-probability terms can
 be added, but their gradients do not share parameters, so the classifier and
@@ -406,14 +405,13 @@ both classes. Then
 \]
 Now suppose that \(x\) is a \(D\)-dimensional binary vector and each component is
 also assigned probability \(0.5\). The input log-likelihood becomes
-\begin{equation}
+\begin{equation*}
 \ln \prod_{d=1}^{D}\operatorname{Bern}(x_d\mid 0.5)
 =
 \sum_{d=1}^{D}\ln \operatorname{Bern}(x_d\mid 0.5)
 =
 -D\ln 2.
-\label{eq:scale-example}
-\end{equation}
+\end{equation*}
 The density term is therefore \(D\) times larger in this simple example. This
 calculation does not depend on a specific architecture. It shows a structural
 imbalance between a low-dimensional target and a high-dimensional input.

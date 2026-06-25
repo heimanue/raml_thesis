@@ -4,9 +4,6 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="c3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#0f172a;" value="Conceptual redraw of Fig. 6.3: hybrid model with an invertible flow backbone" vertex="1">
-          <mxGeometry height="34" width="940" x="50" y="22" as="geometry" />
-        </mxCell>
         <mxCell id="c4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=14;fontStyle=1;" value="input x" vertex="1">
           <mxGeometry height="60" width="105" x="65" y="215" as="geometry" />
         </mxCell>

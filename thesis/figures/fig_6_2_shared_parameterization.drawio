@@ -4,9 +4,6 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="c3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#0f172a;" value="Conceptual redraw of Fig. 6.2: shared parameterization for the joint model" vertex="1">
-          <mxGeometry height="34" width="880" x="50" y="22" as="geometry" />
-        </mxCell>
         <mxCell id="c4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f8fafc;strokeColor=#334155;strokeWidth=2;fontSize=14;fontStyle=1;" value="input x" vertex="1">
           <mxGeometry height="60" width="110" x="60" y="190" as="geometry" />
         </mxCell>

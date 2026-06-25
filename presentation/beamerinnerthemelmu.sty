@@ -1,0 +1,290 @@
+\mode<presentation>
+
+% Length definitions as given in the LMU Corporate Design Manual
+%\newlength{\m} % Multiplicator corresponding to aspect ratio
+%\typeout{Paperwidth: \the\paperwidth}
+%\setlength{\m}{\dimexpr(\paperwidth/254.0pt)\relax}
+%\newlength{\x} % Distance of Box from Edge
+%\setlength{\x}{\m*7mm}
+%\newlength{\a} % Height of Box
+%\setlength{\a}{\m*18.4mm}
+%\newlength{\b} % Separation of Boxes
+%\setlength{\b}{\m*2mm}
+%\newlength{\h} % Heightof Header
+%\setlength{\h}{\m*29mm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Background %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setbeamertemplate{background}{
+  \begin{tikzpicture}[line width=0.1mm]
+  	\ifnum\thepage=1
+    \useasboundingbox (0,0) rectangle (\the\paperwidth,\the\paperheight);
+    \fill[color=lmu@background1] (0,\the\paperheight-17mm) rectangle (\the\paperwidth,\the\paperheight);
+    \node[anchor=south west,inner sep=0] at (2mm,\the\paperheight-15.5mm) {
+      \includegraphics[height=13mm]{figs/lmu_green} };
+  
+  
+  \fi
+    \ifnum\thepage>1\relax%
+
+    \useasboundingbox (0,0) rectangle (\the\paperwidth,\the\paperheight);
+    \fill[color=lmu@green] (0,\the\paperheight-10mm) rectangle (\the\paperwidth,\the\paperheight);
+      % rectangle for title
+      %\draw[color=lmu@black] (32.8mm,\the\paperheight-15mm)
+     %rectangle (\the\paperwidth-40mm,\the\paperheight-2mm);
+     % \node[anchor=south east,inner sep=0] at
+     % (\the\paperwidth-2mm,\the\paperheight-90mm) {
+     %   \includegraphics[height=13mm]{siegel}%
+     % };      
+
+    \fi
+  	\ifnum\thepage=1
+    \node[anchor=south east,inner sep=0, minimum
+      width=0.25\textwidth, minimum height=13mm,align=left] at
+    (\the\paperwidth,\the\paperheight-15mm) {
+      \includegraphics[height=11mm]{figs/AIML_Logo}%
+    };
+%\node[anchor=south east,inner sep=0, minimum
+%width=0.25\textwidth, minimum height=13mm,align=left] at
+%(\the\paperwidth-28mm,\the\paperheight-15mm) {
+%	\includegraphics[height=11mm]{figs/AIML_Logo}%
+%}
+\fi
+
+%      \draw[color=lmu@black] (\the\paperwidth-37mm,\the\paperheight-15mm)
+%rectangle (\the\paperwidth-5mm,\the\paperheight-2mm);
+\end{tikzpicture}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Title & Part Pages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pgfdeclareimage[height=.5\paperheight]{lmu-siegel-large}{figs/siegel}
+
+% set these for manual without box in \defbeamertemplate*{headline}{lmu theme}{
+% in head foot line
+%\put(0.7,-0.55){%
+%\put(0,-0.45){%
+%0.7 paperheight
+
+\setbeamertemplate{title page}{%
+\hspace{18pt}
+  \setlength{\unitlength}{\paperwidth}
+  \begin{picture}(0,0)%
+    \put(0.70,-0.45){%
+      \pgfuseimage{lmu-siegel-large}%
+    }%
+    \put(0,-0.45){%
+      \begin{minipage}[b][0.95\paperheight]{\textwidth}
+        \ifx\inserttitlegraphic\@empty\else\usebeamertemplate*{title graphic}\fi
+        \vfill%
+        \vfill
+        \ifx\inserttitle\@empty\else\usebeamertemplate*{title}\fi
+        \ifx\insertsubtitle\@empty\else\usebeamertemplate*{subtitle}\fi
+        %\usebeamertemplate*{title separator}
+        \begin{minipage}[b]{0.9\textwidth}
+        \ifx\beamer@shortauthor\@empty\else\usebeamertemplate*{author}\fi
+        \end{minipage}
+        \begin{minipage}[b]{0.9\textwidth}
+        \usebeamertemplate*{institute}
+        \end{minipage}
+        %\ifx\insertdate\@empty\else\usebeamertemplate*{date}\fi
+
+        \vfill
+        \vspace*{1mm}
+      \end{minipage}
+    }%
+  \end{picture}
+}
+
+\def\maketitle{%
+  \ifbeamer@inframe
+    \titlepage
+  \else
+    \frame[plain,noframenumbering]{\titlepage}
+  \fi
+}
+\def\titlepage{%
+  \usebeamertemplate{title page}
+}
+
+\setbeamertemplate{title graphic}{
+  \vbox to 0pt {
+      \vspace*{2em}
+      \inserttitlegraphic%
+    }%
+  \nointerlineskip%
+}
+\setbeamertemplate{title}{
+  \raggedright%
+  \linespread{1.0}%
+  \inserttitle%
+  \par%
+  \vspace*{0.5em}
+}
+\setbeamertemplate{subtitle}{
+  \raggedright%
+  \insertsubtitle%
+  \par%
+  \vspace*{0.5em}
+}
+%\newlength{\lmu@titleseparator@linewidth}
+%\setlength{\lmu@titleseparator@linewidth}{0.4pt}
+%\setbeamertemplate{title separator}{
+%  \tikzexternaldisable%
+%  \begin{tikzpicture}
+%    \fill[fg] (0,0) rectangle (\textwidth, \lmu@titleseparator@linewidth);
+%  \end{tikzpicture}%
+%  \tikzexternalenable%
+%  \par%
+%}
+\setbeamertemplate{author}{
+  \vspace*{2em}
+  \insertauthor%
+  \par%
+  %\vspace*{0em}
+
+}
+
+
+%\setbeamertemplate{date}{
+%  \insertdate%
+%  \par%
+%}
+
+\setbeamertemplate{institute}{
+	\vspace*{1.5em}
+	\insertinstitute%
+	\par%
+	%\vspace*{0em}
+	
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Table Of Contents %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\setbeamertemplate{sections/subsections in toc}[ball]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Navigation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%empty sidebar because we want our navigation symbols to be in the footer
+\setbeamertemplate{sidebar right}{}
+
+\setbeamertemplate{navigation symbols}
+{%
+  \ifnum\thepage>1\relax%
+    \insertslidenavigationsymbol%
+    \insertframenavigationsymbol%
+    \insertsubsectionnavigationsymbol%
+    \insertsectionnavigationsymbol%
+    %\insertdocnavigationsymbol
+    %\insertbackfindforwardnavigationsymbo}
+  \fi
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%% Itemize & Enumerate Environments %%%%%%%%%%%%%%%%%%%%%%%
+
+%\setbeamertemplate{itemize items}{\textbullet}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Description Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Block Environment %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\inserttotalframenumber{100}
+\newlength{\lmu@blocksep}
+\newlength{\lmu@blockadjust}
+\setlength{\lmu@blocksep}{0.75ex}
+\setlength{\lmu@blockadjust}{0.25ex}
+\providecommand{\lmu@strut}{%
+  \vphantom{ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz()}%
+}
+\newcommand{\lmu@block}[1]{
+\par\vskip\medskipamount%
+\setlength{\parskip}{0pt}
+\ifbeamercolorempty[bg]{block title#1}{%
+  \begin{beamercolorbox}[rightskip=0pt plus 4em]{block title#1}}{%
+    \ifbeamercolorempty[bg]{block title}{%
+      \begin{beamercolorbox}[rightskip=0pt plus 4em]{block title#1}%
+        }%
+        {%
+        \begin{beamercolorbox}[
+            sep=\dimexpr\lmu@blocksep-\lmu@blockadjust\relax,
+            leftskip=\lmu@blockadjust,
+            rightskip=\dimexpr\lmu@blockadjust plus 4em\relax
+          ]{block title#1}%
+          }}%
+          \usebeamerfont*{block title#1}%
+          \lmu@strut%
+          \insertblocktitle%
+          \lmu@strut%
+        \end{beamercolorbox}%
+        \nointerlineskip%
+        \ifbeamercolorempty[bg]{block body#1}{%
+          \begin{beamercolorbox}[vmode]{block body#1}}
+            {
+            \ifbeamercolorempty[bg]{block body}{%
+              \begin{beamercolorbox}[vmode]{block body#1}%
+                }{%
+                \begin{beamercolorbox}[sep=\lmu@blocksep, vmode]{block body#1}%
+                  \vspace{-\lmu@parskip}
+                  }
+                  }%
+                  \usebeamerfont{block body#1}%
+                  \setlength{\parskip}{\lmu@parskip}%
+                  }
+                  \setbeamertemplate{block begin}{\lmu@block{}}
+                  \setbeamertemplate{block alerted begin}{\lmu@block{ alerted}}
+                  \setbeamertemplate{block example begin}{\lmu@block{ example}}
+                  \setbeamertemplate{block end}{\end{beamercolorbox}\vspace*{0.2ex}}
+
+                \setbeamertemplate{block alerted end}{\end{beamercolorbox}\vspace*{0.2ex}}
+            \setbeamertemplate{block example end}{\end{beamercolorbox}\vspace*{0.2ex}}
+
+        \newlength{\lmu@parskip}
+        \setlength{\lmu@parskip}{0.5em}
+        \setlength{\parskip}{\lmu@parskip}
+        \linespread{1.15}
+
+        \setbeamertemplate{block begin}{\lmu@block{}}
+        \setbeamertemplate{block alerted begin}{\lmu@block{ alerted}}
+        \setbeamertemplate{block example begin}{\lmu@block{ example}}
+        \setbeamertemplate{block end}{\end{beamercolorbox}\vspace*{0.2ex}}
+    \setbeamertemplate{block alerted end}{\end{beamercolorbox}\vspace*{0.2ex}}
+\setbeamertemplate{block example end}{\end{beamercolorbox}\vspace*{0.2ex}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Theorem & Proof Environment %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setbeamertemplate{caption label separator}{: }
+\setbeamertemplate{caption}[numbered]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Figures & Tables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Footnotes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\setbeamertemplate{footnote}{%
+%  \parindent 0em\noindent%
+%  \raggedright
+%  \usebeamercolor{footnote}\hbox to 0.8em{\hfill\insertfootnotemark}\insertfootnotetext\par%
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Bibliography Entries %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\setbeamertemplate{bibliography item}{\insertbiblabel}
+
+
+%\defbeamertemplate{section page}{simple}{
+%  \begin{center}
+%    \usebeamercolor[fg]{section title}
+%    \usebeamerfont{section title}
+%    \insertsectionhead\par
+%    \ifx\insertsubsectionhead\@empty\else
+%      \usebeamercolor[fg]{subsection title}
+%      \usebeamerfont{subsection title}
+%      \insertsubsectionhead
+%    \fi
+%  \end{center}
+%}
+%
+%\setbeamertemplate{section page}{%
+%  \usebeamertemplate*{section page}
+%}
+
+\mode<all>

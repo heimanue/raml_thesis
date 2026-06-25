@@ -1,0 +1,25 @@
+\mode<presentation>
+
+\defbeamertemplate*{headline}{lmu theme}{
+\ifnum\thepage>1
+\begin{beamercolorbox}[ht=7ex, dp=3ex, leftskip=2em]{section in head/foot}
+    \usebeamerfont{section in head/foot}
+    \color{lmu@background}
+    \insertsection
+\end{beamercolorbox}
+\fi
+}
+
+\defbeamertemplate*{footline}{lmu theme}{%
+\ifnum\thepage>1
+\begin{beamercolorbox}[ht=5ex,dp=2ex,leftskip=1em,rightskip=1em]{author in head/foot}
+	\includegraphics[height=5mm]{figs/AIML_Logo}
+    \hfill%
+	\MakeUppercase{\insertshortauthor}\qquad \textit{\inserttitle}
+	\hfill%
+    {\large\bfseries\insertframenumber}/\inserttotalframenumber
+\end{beamercolorbox}%
+\fi	
+}
+
+\mode<all>

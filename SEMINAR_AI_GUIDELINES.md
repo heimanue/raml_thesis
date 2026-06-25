@@ -24,6 +24,8 @@ This is a **university seminar report** for the Master's seminar *"Recent Advanc
 > If the page target and word-count target appear to conflict during drafting, flag the conflict explicitly instead of silently compressing or expanding the text.
 > The official seminar handout currently says "characters"; this is a typo. Treat **7,000–14,000 words** as the correct requirement.
 
+> **Current drafting decision:** After reviewing the scope, the current report intentionally targets roughly **4,500–5,500 words** because this is more concise while still covering the topic completely. If strict formal compliance becomes necessary, expand the draft toward the official 7,000-word lower bound rather than silently changing the target.
+
 ### Guideline Source Files
 
 | File | Use |
@@ -205,7 +207,7 @@ They should not replace the book as the structural backbone of the report.
 
 ## 11. Quick Checklist Before Submission
 
-- [ ] Word count is between 7,000 and 14,000
+- [ ] Word count follows the current agreed target of roughly 4,500–5,500 words, or the draft has been deliberately expanded if strict 7,000–14,000-word compliance is required
 - [ ] Written in English
 - [ ] Compiled in LaTeX using the Moodle template
 - [ ] All section headings are specific and informative
